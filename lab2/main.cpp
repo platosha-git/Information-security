@@ -1,5 +1,6 @@
 #include <iostream>
-#include <fstream>
+
+#include "iohandlers.h"
 #include "enigma.h"
 
 using namespace std;
@@ -13,28 +14,23 @@ void menu()
     cout << "Exit................3" << endl << endl;
 }
 
-void writeToFile(string filename, string cipherString)
+string getPlainString()
 {
-    ofstream out;
-    out.open(filename);
-    if (out.is_open()) {
-        out << cipherString << endl;
+    cout << "From file......1" << endl;
+    cout << "From console...2" << endl << endl;
+
+    int chooseStream = 0;
+    cin >> chooseStream;
+
+    string plainString = "";
+    if (chooseStream == 1) {
+        plainString = getFileStr();
     }
-    out.close();
-}
-
-string readFromFile(string filename)
-{
-    string line = "";
-
-    ifstream in;
-    in.open(filename);
-    if (in.is_open()) {
-        getline(in, line);
+    else {
+        plainString = getConsoleStr();
     }
-    in.close();
 
-    return line;
+    return plainString;
 }
 
 int main()
@@ -49,11 +45,7 @@ int main()
         {
             Enigma enigma(encoder, numRotors);
 
-            string plainString;
-            cout << "Input message for encryption: ";
-            cin.ignore();
-            getline(cin, plainString);
-
+            string plainString = getPlainString();
             string cipherString = enigma.encrypt(plainString);
 
             cout << "Encrypted message: " << cipherString << endl;

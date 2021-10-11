@@ -5,11 +5,13 @@ CONFIG -= qt
 
 SOURCES += \
         enigma.cpp \
+        iohandlers.cpp \
         main.cpp \
         reflector.cpp \
         rotor.cpp
 
 HEADERS += \
     enigma.h \
+    iohandlers.h \
     reflector.h \
     rotor.h
