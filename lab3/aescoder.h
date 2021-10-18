@@ -7,16 +7,20 @@
 class AEScoder
 {
 public:
-    AEScoder(std::string message[maxLines], int numLines);
-    //ShiftRows();
+    void encode(std::string &message);
 
 private:
     const static int Nb = 4;
     const static int Nk = 4;
     const static int Nr = 10;
 
-    std::string message[maxLines];
-    int numLines;
+    void blockEncode(unsigned char (&block)[16]);
+
+    void addRoundKey(int keyNumber);
+    void subBytes();
+    void shiftRows();
+
+    unsigned char state[16];
 };
 
 #endif // AESCODER_H

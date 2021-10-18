@@ -8,6 +8,8 @@ using namespace std;
 const static string inputFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab3/in.txt";
 const static string outputFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab3/out.txt";
 
+const int maxLines = 15;
+
 void getMessage(string (&message)[maxLines], int &numLines)
 {
     string line = "";
@@ -42,7 +44,10 @@ int main()
 
     getMessage(message, numLines);
 
-    AEScoder coder(message, numLines);
+    AEScoder coder;
+    for (int i = 0; i < numLines; i++) {
+        coder.encode(message[i]);
+    }
 
     writeMessage(message, numLines);
 
