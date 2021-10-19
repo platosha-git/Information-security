@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
+        aes.cpp \
         aescoder.cpp \
         main.cpp
 
