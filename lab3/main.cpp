@@ -10,54 +10,44 @@ const static string inputFile = "/home/platosha/Desktop/BMSTU/7sem/Information-s
 const static string outputFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab3/out.txt";
 
 const string key = "rf6GeQysVk1390Po";
-const int maxLines = 15;
 
-void getMessage(string (&message)[maxLines], int &numLines)
+void getMessage(string &message)
 {
-    string line = "";
-
-    ifstream in(inputFile);
+    std::ifstream in(inputFile);
     if (in.is_open()) {
-        int i = 0;
-        while (getline(in, line) && i < maxLines) {
-            message[i] = line;
-            i++;
+        std::stringstream buffer;
+        buffer << in.rdbuf();
+
+        auto line = buffer.str();
+        int len = line.size();
+
+        for (int i = 0; i < len; i++) {
+            message += line[i];
         }
-        numLines = i;
+
+        in.close();
     }
-    in.close();
 }
 
-void writeMessage(string message[maxLines], int numLines)
+void writeMessage(string message)
 {
     ofstream out(outputFile);
     if (out.is_open()) {
-        for (int i = 0; i < numLines; i++) {
-            out << message[i];
-        }
+        out << message;
+        out.close();
     }
-    out.close();
 }
 
 int main()
 {
-    string message[maxLines];
-    int numLines = 0;
-
-    //getMessage(message, numLines);
-    std::ifstream t(inputFile);
-    std::stringstream buffer;
-    buffer << t.rdbuf();
-    auto data = buffer.str();
+    string message = "";
+    getMessage(message);
 
     AEScoder coder(key);
-    //for (int i = 0; i < numLines; i++) {
-        coder.decode(data);
-    //}
+    coder.decode(message);
 
-    //writeMessage(data, 1);
-    std::ofstream output(outputFile);
-    output << data;
+    writeMessage(message);
+    cout << message << endl;
     cout << "Message was written to the file!\n\n";
 
     return 0;

@@ -21,12 +21,13 @@ void AEScoder::encode(string &message)
     string res = "";
     unsigned char addition = 0;
 
-    int i = 0, len = message.length();
+//Dividing the message into blocks of 16 bits
 
+    int i = 0, len = message.length();
     while (i < len) {
         memset(state, 0, 16);
-        unsigned char j = 0;
 
+        unsigned char j = 0;
         while (j < 16 && i + j < len) {
             state[j] = static_cast<unsigned char>(message[i + j]);
             j++;

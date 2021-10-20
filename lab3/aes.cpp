@@ -10,24 +10,24 @@ using namespace std;
 void AEScoder::keyExpansion()
 {
     for (int i = 0; i < Nk; i++) {
-        unsigned char tmp[4] = {key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]};
-        memcpy(roundKey[i], tmp, 4);
+        unsigned char word[4] = {key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]};
+        memcpy(roundKey[i], word, 4);
     }
 
     for (int i = Nk; i < Nb * (Nr + 1); i++) {
-        unsigned char tmp[4];
-        memcpy(tmp, roundKey[i - 1], 4);
+        unsigned char curRow[4];
+        memcpy(curRow, roundKey[i - 1], 4);
 
         if (i % Nk == 0) {
-            rotate(tmp, tmp + 1, tmp + 4);
-            subWord(tmp);
-            xorWords(tmp, Rcon[i / Nk], tmp);
+            rotate(curRow, curRow + 1, curRow + 4);
+            subWord(curRow);
+            xorWords(curRow, Rcon[i / Nk], curRow);
         }
         else if (Nk > 6 && i % Nk == 4) {
-            subWord(tmp);
+            subWord(curRow);
         }
 
-        xorWords(roundKey[i - Nk], tmp, roundKey[i]);
+        xorWords(roundKey[i - Nk], curRow, roundKey[i]);
     }
 }
 
@@ -51,7 +51,7 @@ void AEScoder::addRoundKey(const int keyNumber)
 {
     for (int i = 0; i < 4; i++) {
         for  (int j = 0; j < 4; j++) {
-            state[4 * i + j] ^= roundKey[keyNumber * 4 + i][j];
+            state[4 * i + j] ^= roundKey[4 * keyNumber + i][j];
         }
     }
 }
@@ -78,30 +78,31 @@ void AEScoder::shiftRows()
 
 void AEScoder::mixColumns()
 {
-    for (auto i = 0ul; i < 4; i++) {
-            unsigned char col[4];
-            for (auto j = 0ul; j < 4; j++) {
-                col[j] = {state[j + 4 * i]};
-            }
-
-            unsigned char a[4];
-            a[0] = col[0];
-            a[1] = col[1];
-            a[2] = col[2];
-            a[3] = col[3];
-
-            col[0] = g_mul(a[0], 2) ^ g_mul(a[3], 1) ^ g_mul(a[2], 1) ^ g_mul(a[1], 3);
-            col[1] = g_mul(a[1], 2) ^ g_mul(a[0], 1) ^ g_mul(a[3], 1) ^ g_mul(a[2], 3);
-            col[2] = g_mul(a[2], 2) ^ g_mul(a[1], 1) ^ g_mul(a[0], 1) ^ g_mul(a[3], 3);
-            col[3] = g_mul(a[3], 2) ^ g_mul(a[2], 1) ^ g_mul(a[1], 1) ^ g_mul(a[0], 3);
-
-            for (auto j = 0ul; j < 4; j++) {
-                state[j + 4 * i] = col[j];
-            }
+    for (int i = 0; i < 4; i++) {
+        unsigned char curCol[4];
+        for (int j = 0; j < 4; j++) {
+            curCol[j] = state[j + 4 * i];
         }
+
+        ///////////////////////////////
+        unsigned char a[4], b[4];
+        for (unsigned char c = 0; c < 4; c++) {
+            a[c] = curCol[c];
+            unsigned char h = (unsigned char)((signed char)curCol[c] >> 7);
+            b[c] = curCol[c] << 1;
+            b[c] ^= 0x1B & h;
+        }
+        ////////////////////////////////
+
+        state[i * 4 + 0] = b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1];    // 2a0 + a3 + a2 + 3a1
+        state[i * 4 + 1] = b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2];    // 2a1 + a0 + a3 + 3a2
+        state[i * 4 + 2] = b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3];    // 2a2 + a1 + a0 + 3a3
+        state[i * 4 + 3] = b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0];    // 2a3 + a2 + a1 + 3a0
+    }
 }
 
-unsigned char AEScoder::g_mul(unsigned char a, unsigned char b) {
+unsigned char AEScoder::g_mul(unsigned char a, unsigned char b)
+{
     unsigned char p = 0;
     unsigned char counter;
     unsigned char hi_bit_set;
