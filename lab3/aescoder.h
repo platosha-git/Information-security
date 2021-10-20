@@ -10,6 +10,7 @@ class AEScoder
 public:
     AEScoder(std::string key);
     void encode(std::string &message);
+    void decode(std::string &message);
 
 private:
     const static int Nb = 4;
@@ -21,16 +22,18 @@ private:
     void xorWords(const unsigned char w1[4], const unsigned char w2[4], unsigned char (&res)[4]);
 
     void blockEncode();
+    void blockDecode();
 
-    void addRoundKey(int keyNumber);
+    void addRoundKey(const int keyNumber);
     void subBytes();
     void shiftRows();
+    void mixColumns();
+    unsigned char gMul(unsigned char a, unsigned char kf);
 
-    void output(unsigned char *tbl, const int size);
 
     unsigned char state[16];
     unsigned char key[4 * Nk];
-    unsigned char roundKeys[Nb * (Nr + 1)][4];
+    unsigned char roundKey[Nb * (Nr + 1)][4];
 };
 
 #endif // AESCODER_H

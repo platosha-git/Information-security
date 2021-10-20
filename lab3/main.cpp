@@ -32,7 +32,7 @@ void writeMessage(string message[maxLines], int numLines)
     ofstream out(outputFile);
     if (out.is_open()) {
         for (int i = 0; i < numLines; i++) {
-            out << message[i] << endl;
+            out << message[i];
         }
     }
     out.close();
@@ -46,11 +46,12 @@ int main()
     getMessage(message, numLines);
 
     AEScoder coder(key);
-    //for (int i = 0; i < numLines; i++) {
-        coder.encode(message[0]);
-    //}
+    for (int i = 0; i < numLines; i++) {
+        coder.encode(message[i]);
+    }
 
     writeMessage(message, numLines);
+    cout << "Message was written to the file!\n\n";
 
     return 0;
 }

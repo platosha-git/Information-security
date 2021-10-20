@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <cstring>
+#include <algorithm>
 
 #include "aescoder.h"
 
@@ -21,6 +22,7 @@ void AEScoder::encode(string &message)
     unsigned char addition = 0;
 
     int i = 0, len = message.length();
+
     while (i < len) {
         memset(state, 0, 16);
         unsigned char j = 0;
@@ -45,33 +47,77 @@ void AEScoder::encode(string &message)
         }
     }
 
-    unsigned char lastBlock[16];
-    memset(lastBlock, 0, 15);
-    lastBlock[15] = addition;
+    memset(state, 0, 15);
+    state[15] = addition;
 
-    //blockEncode(lastBlock);
+    blockEncode();
+
     for (int k = 0; k < 16; k++) {
-        res += lastBlock[k];
+        res += state[k];
     }
 
     message = res;
 }
 
+/*void AEScoder::decode(string &message)
+{
+    string res = "";
+    int i = 0, len = message.length();
+
+    while (i < len) {
+        memset(state, 0, 16);
+        unsigned char j = 0;
+
+        while (j < 16 && i + j < len) {
+            state[j] = static_cast<unsigned char>(message[i + j]);
+            j++;
+        }
+        i += 16;
+
+        blockDecode();
+
+        for (int k = 0; k < 16; k++) {
+            res += (char) state[k];
+        }
+    }
+
+    auto zeroes = res[res.length() - 1] + 16;
+    if (zeroes > 0) {
+        res = res.substr(0, res.size() - zeroes);
+    }
+
+    message = res;
+}
+*/
 void AEScoder::blockEncode()
 {
-    cout << "before:" << endl;
-    for (int i = 0; i < 16; i++) {
-        cout << state[i] << " ";
-    }
-    cout << endl;
+    addRoundKey(0);
 
-    //addRoundKey(0);
-
-    /*for (int i = 1; i < Nr; i++) {
-        //subBytes();
-        //ShiftRows(state)
-        //MixColumns(state)
-        //AddRoundKey(state, w[round*Nb, (round+1)*Nb-1])
+    for (int i = 1; i < Nr; i++) {
+        subBytes();
+        shiftRows();
+        mixColumns();
+        addRoundKey(i);
     }
-    */
+
+    subBytes();
+    shiftRows();
+    addRoundKey(Nr);
 }
+
+/*void AEScoder::blockDecode()
+{
+    addRoundKey(Nr);
+
+    for (int i = Nr - 1; i > 0; i--) {
+        invShiftRows();
+        invSubBytes();
+        addRoundKey(i);
+        invMixColumns();
+    }
+
+    invShiftRows();
+    invSubBytes();
+    addRoundKey(0);
+}
+*/
