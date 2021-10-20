@@ -25,10 +25,16 @@ private:
     void blockDecode();
 
     void addRoundKey(const int keyNumber);
+
     void subBytes();
+    void invSubBytes();
+
     void shiftRows();
+    void invShiftRows();
+
     void mixColumns();
-    unsigned char gMul(unsigned char a, unsigned char kf);
+    void invMixColumns();
+    unsigned char g_mul(unsigned char a, unsigned char b);
 
 
     unsigned char state[16];

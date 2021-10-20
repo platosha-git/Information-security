@@ -6,6 +6,8 @@ CONFIG -= qt
 SOURCES += \
         aes.cpp \
         aescoder.cpp \
+        aesdecoder.cpp \
+        invaes.cpp \
         main.cpp
 
 HEADERS += \

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "aescoder.h"
 
@@ -43,14 +44,20 @@ int main()
     string message[maxLines];
     int numLines = 0;
 
-    getMessage(message, numLines);
+    //getMessage(message, numLines);
+    std::ifstream t(inputFile);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    auto data = buffer.str();
 
     AEScoder coder(key);
-    for (int i = 0; i < numLines; i++) {
-        coder.encode(message[i]);
-    }
+    //for (int i = 0; i < numLines; i++) {
+        coder.decode(data);
+    //}
 
-    writeMessage(message, numLines);
+    //writeMessage(data, 1);
+    std::ofstream output(outputFile);
+    output << data;
     cout << "Message was written to the file!\n\n";
 
     return 0;
