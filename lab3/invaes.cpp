@@ -36,28 +36,30 @@ void AEScoder::invMixColumns()
             curCol[j] = state[j + 4 * i];
         }
 
-        ///////////////////////////////
-        /*unsigned char a[4];
-        unsigned char b[4];
-        unsigned char c;
-        unsigned char h;
-        for(c = 0; c < 4; c++) {
-            a[c] = curCol[c];
-            h = (unsigned char)((signed char)curCol[c] >> 7);
-            b[c] = curCol[c] << 1;
-            b[c] ^= 0x1B & h;
+        state[4 * i + 0] = gMul(curCol[0], 14) ^ gMul(curCol[3], 9) ^ gMul(curCol[2], 13) ^ gMul(curCol[1], 11);
+        state[4 * i + 1] = gMul(curCol[1], 14) ^ gMul(curCol[0], 9) ^ gMul(curCol[3], 13) ^ gMul(curCol[2], 11);
+        state[4 * i + 2] = gMul(curCol[2], 14) ^ gMul(curCol[1], 9) ^ gMul(curCol[0], 13) ^ gMul(curCol[3], 11);
+        state[4 * i + 3] = gMul(curCol[3], 14) ^ gMul(curCol[2], 9) ^ gMul(curCol[1], 13) ^ gMul(curCol[0], 11);
+    }
+}
+
+unsigned char AEScoder::gMul(unsigned char a, unsigned char b)
+{
+    unsigned char res = 0;
+    for (unsigned char counter = 0; counter < 8; counter++) {
+        if ((b & 1) == 1) {
+            res ^= a;
         }
 
-        ////////////////////////////////
-        state[i * 4 + 0] = b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1];
-        state[i * 4 + 1] = b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2];
-        state[i * 4 + 2] = b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3];
-        state[i * 4 + 3] = b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0];
-        */
+        unsigned char h = static_cast<unsigned char>(a & 0x80);
+        a <<= 1;
 
-        state[4 * i] = g_mul(curCol[0], 14) ^ g_mul(curCol[3], 9) ^ g_mul(curCol[2], 13) ^ g_mul(curCol[1], 11);
-                state[4 * i + 1] = g_mul(curCol[1], 14) ^ g_mul(curCol[0], 9) ^ g_mul(curCol[3], 13) ^ g_mul(curCol[2], 11);
-                state[4 * i + 2] = g_mul(curCol[2], 14) ^ g_mul(curCol[1], 9) ^ g_mul(curCol[0], 13) ^ g_mul(curCol[3], 11);
-                state[4 * i + 3] = g_mul(curCol[3], 14) ^ g_mul(curCol[2], 9) ^ g_mul(curCol[1], 13) ^ g_mul(curCol[0], 11);
+        if (h == 0x80) {
+            a ^= 0x1b;
+        }
+
+        b >>= 1;
     }
+
+    return res;
 }

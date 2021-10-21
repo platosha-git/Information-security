@@ -34,7 +34,7 @@ private:
 
     void mixColumns();
     void invMixColumns();
-    unsigned char g_mul(unsigned char a, unsigned char b);
+    unsigned char gMul(unsigned char a, unsigned char b);
 
 
     unsigned char state[16];
