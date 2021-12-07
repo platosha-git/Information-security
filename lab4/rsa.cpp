@@ -36,30 +36,33 @@ vector<unsigned int> RSA::encode(const vector<unsigned int> &data, vector<unsign
 
 vector<unsigned int> RSA::decode(const vector<unsigned int> &data, vector<unsigned int> key)
 {
-    vector<unsigned int> resized_data = resize(data, 8, getChunkSize(key));
-    vector<unsigned int> encrypted_data(resized_data.size());
-    for (size_t i = 0; i < resized_data.size(); i++) {
-        encrypted_data[i] = binpow(resized_data[i], key[0], key[1]);
+    vector<unsigned int> resizedData = resize(data, 8, getChunkSize(key));
+    vector<unsigned int> deData(resizedData.size());
+    for (size_t i = 0; i < resizedData.size(); i++) {
+        deData[i] = binpow(resizedData[i], key[0], key[1]);
     }
 
-    vector<unsigned int> result_64 = resize(encrypted_data, getChunkSize(key) - 1, 8);
-    vector<unsigned int> result(result_64.size());
-    for (size_t i = 0; i < result_64.size(); i++) {
-        result[i] = (unsigned int) result_64[i];
+    vector<unsigned int> result64 = resize(deData, getChunkSize(key) - 1, 8);
+    vector<unsigned int> result(result64.size());
+    for (size_t i = 0; i < result64.size(); i++) {
+        result[i] = (unsigned int) result64[i];
     }
 
     return result;
 }
 
+//Размер блока ключа шифрования
 unsigned int RSA::getChunkSize(vector<unsigned int> key) {
     return 32 - __builtin_clz(key[1]);
 }
 
-vector<unsigned int> resize(const vector<unsigned int> &data, unsigned int size, unsigned int newSize) {
+//Разбиение на блоки
+vector<unsigned int> RSA::resize(const vector<unsigned int> &data, unsigned int size, unsigned int newSize)
+{
     vector<unsigned int> res;
     unsigned int done = 0;
     unsigned int cur = 0;
-    for (unsigned int byte: data)
+    for (unsigned int byte: data) {
         for (unsigned int i = 0; i < size; i++) {
             cur = (cur << 1U) + (((unsigned int) byte & (1U << (unsigned int) (size - 1 - i))) != 0);
             done++;
@@ -69,9 +72,12 @@ vector<unsigned int> resize(const vector<unsigned int> &data, unsigned int size,
                 cur = 0;
             }
         }
+    }
 
     //Дополнение нулями
-    if (done != 0)
+    if (done != 0) {
         res.push_back(cur << (unsigned int) (newSize - done));
+    }
+
     return res;
 }
