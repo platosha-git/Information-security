@@ -6,32 +6,26 @@
 #include <vector>
 #include <climits>
 
-typedef struct {
-    uint64_t e;
-    uint64_t m;
-} key;
-
 class RSA {
 public:
-    explicit RSA() = default;;
+    explicit RSA() = default;
 
     void set_open_key(unsigned int e, unsigned int n);
     void set_private_key(unsigned int d, unsigned int n);
-    unsigned int encode(unsigned char symbol);
-    unsigned char decode(unsigned int symbol);
+
+    std::vector<unsigned int> encode(const std::vector<unsigned int> &data, std::vector<unsigned int> key);
+    std::vector<unsigned int> decode(const std::vector<unsigned int> &data, std::vector<unsigned int> key);
 
 private:
     unsigned int e{};
     unsigned int d{};
     unsigned int n{};
 
-    unsigned int binpow(unsigned int a, unsigned int n, unsigned int m);
+    unsigned int binpow(unsigned int a, unsigned int e, unsigned int mod);
+    unsigned int getChunkSize(std::vector<unsigned int> key);
 };
 
-std::vector<unsigned int> process_bytes(const std::vector<unsigned int> &data, key k, bool encrypt);
-uint8_t get_chunk_size(key k);
-std::vector<uint64_t> resize(const std::vector<uint64_t> &data, uint8_t in_size, uint8_t out_size);
-uint64_t binpow(uint64_t a, uint64_t e, uint64_t mod = LLONG_MAX);
-uint64_t sqr(uint64_t x);
+
+std::vector<unsigned int> resize(const std::vector<unsigned int> &data, unsigned int in_size, unsigned int out_size);
 
 #endif // RSA_H

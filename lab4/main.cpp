@@ -35,6 +35,18 @@ void writeKey(const vector<unsigned int> key, const string filename)
     cout << "Key was written to the file!\n\n";
 }
 
+vector<unsigned int> readKey(const string filename)
+{
+    vector<unsigned int> key(2, 0);
+    ifstream in(filename);
+    if (in.is_open()) {
+        in >> key[0] >> key[1];
+        in.close();
+    }
+
+    return key;
+}
+
 int main()
 {
     int choose = 0;
@@ -42,6 +54,7 @@ int main()
         menu();
         cin >> choose;
 
+        RSA rsa;
         switch(choose) {
         case 1:
         {
@@ -53,21 +66,18 @@ int main()
         }
         case 2:
         {
-            uint64_t e = 7, m = 5;
             vector<unsigned int> message = readBytes(inputFilename);
-            vector<unsigned int> enMessage = process_bytes(message, {e, m}, true);
+            vector<unsigned int> key = readKey(publicFilename);
+            vector<unsigned int> enMessage = rsa.encode(message, {7, 5});
             writeBytes(encodeFilename, enMessage);
-            cout << "Done." << endl;
-
             break;
         }
         case 3:
         {
-            uint64_t e = 7, m = 5;
-            vector<unsigned int> in = readBytes(encodeFilename);
-            vector<unsigned int> deMessage = process_bytes(in, {e, m}, false);
+            vector<unsigned int> enMessage = readBytes(encodeFilename);
+            vector<unsigned int> key = readKey(privateFilename);
+            vector<unsigned int> deMessage = rsa.decode(enMessage, {7, 5});
             writeBytes(decodeFilename, deMessage);
-            cout << "Done." << endl;
             break;
         }
         default:

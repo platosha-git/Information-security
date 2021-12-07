@@ -34,4 +34,6 @@ void writeBytes(const string filename, const vector<unsigned int> &data)
     fout.write(buf, data.size());
 
     fout.close();
+
+    cout << "Bytes were written to the file!" << endl << endl;
 }

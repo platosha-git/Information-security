@@ -2,49 +2,76 @@
 
 using namespace std;
 
-vector<unsigned int> process_bytes(const vector<unsigned int> &data, key k, bool encrypt) {
-    vector<uint64_t> data_64(data.size());
-    for (int i = 0; i < data.size(); i++)
-        data_64[i] = (uint64_t) data[i];
-    vector<uint64_t> resized_data = resize(data_64, 8, get_chunk_size(k) - encrypt); //Если мы шифруем, то размер блока K - 1, иначе K
-    vector<uint64_t> encrypted_data(resized_data.size());
-    for (int i = 0; i < resized_data.size(); i++)
-        encrypted_data[i] = binpow(resized_data[i], k.e, k.m);
-    vector<uint64_t> result_64 = resize(encrypted_data, get_chunk_size(k) - !encrypt, 8);
-    vector<unsigned int> result(result_64.size());
-    for (int i = 0; i < result_64.size(); i++)
-        result[i] = (unsigned int) result_64[i];
+unsigned int RSA::binpow(unsigned int a, unsigned int n, unsigned int mod)
+{
+    unsigned int res = 1;
+    while (n) {
+        if (n & 1) {
+            res *= a;
+            res %= mod;
+        }
+        a *= (a % mod);
+        a %= mod;
+        n >>= 1;
+    }
+    return res % mod;
+}
+
+vector<unsigned int> RSA::encode(const vector<unsigned int> &data, vector<unsigned int> key)
+{
+    vector<unsigned int> resizedData = resize(data, 8, getChunkSize(key) - 1);
+    vector<unsigned int> enData(resizedData.size());
+    for (size_t i = 0; i < resizedData.size(); i++) {
+        enData[i] = binpow(resizedData[i], key[0], key[1]);
+    }
+
+    vector<unsigned int> result64 = resize(enData, getChunkSize(key), 8);
+    vector<unsigned int> result(result64.size());
+    for (size_t i = 0; i < result64.size(); i++) {
+        result[i] = (unsigned int) result64[i];
+    }
+
     return result;
 }
 
-uint8_t get_chunk_size(key k) {
-    return 32 - __builtin_clz(k.m);
+vector<unsigned int> RSA::decode(const vector<unsigned int> &data, vector<unsigned int> key)
+{
+    vector<unsigned int> resized_data = resize(data, 8, getChunkSize(key));
+    vector<unsigned int> encrypted_data(resized_data.size());
+    for (size_t i = 0; i < resized_data.size(); i++) {
+        encrypted_data[i] = binpow(resized_data[i], key[0], key[1]);
+    }
+
+    vector<unsigned int> result_64 = resize(encrypted_data, getChunkSize(key) - 1, 8);
+    vector<unsigned int> result(result_64.size());
+    for (size_t i = 0; i < result_64.size(); i++) {
+        result[i] = (unsigned int) result_64[i];
+    }
+
+    return result;
 }
 
-uint64_t sqr(uint64_t x) {
-    return x * x;
+unsigned int RSA::getChunkSize(vector<unsigned int> key) {
+    return 32 - __builtin_clz(key[1]);
 }
 
-uint64_t binpow(uint64_t a, uint64_t e, uint64_t mod) {
-    return e == 0 ? 1 : (e & 1U ? a * binpow(a, e - 1, mod) % mod : sqr(binpow(a, e / 2, mod)) % mod);
-}
-
-vector<uint64_t> resize(const vector<uint64_t> &data, uint8_t in_size, uint8_t out_size) {
-    vector<uint64_t> res;
-    uint8_t done = 0;
-    uint64_t cur = 0;
-    for (uint64_t byte: data)
-        for (uint8_t i = 0; i < in_size; i++) {
-            cur = (cur << 1U) + (((uint64_t) byte & (1U << (uint64_t) (in_size - 1 - i))) != 0);
+vector<unsigned int> resize(const vector<unsigned int> &data, unsigned int size, unsigned int newSize) {
+    vector<unsigned int> res;
+    unsigned int done = 0;
+    unsigned int cur = 0;
+    for (unsigned int byte: data)
+        for (unsigned int i = 0; i < size; i++) {
+            cur = (cur << 1U) + (((unsigned int) byte & (1U << (unsigned int) (size - 1 - i))) != 0);
             done++;
-            if (done == out_size) {
+            if (done == newSize) {
                 done = 0;
                 res.push_back(cur);
                 cur = 0;
             }
         }
+
     //Дополнение нулями
     if (done != 0)
-        res.push_back(cur << (uint64_t) (out_size - done));
+        res.push_back(cur << (unsigned int) (newSize - done));
     return res;
 }
