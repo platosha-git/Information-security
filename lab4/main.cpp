@@ -5,6 +5,9 @@
 
 using namespace std;
 
+const string publicFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab4/public.key";
+const string privateFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab4/private.key";
+
 void menu()
 {
     cout << "Genereate keys......1" << endl;
@@ -13,16 +16,16 @@ void menu()
     cout << "Exit................4" << endl;
 }
 
-void writeMessage(const string message, const string filename)
+void writeKey(const vector<unsigned int> key, const string filename)
 {
     ofstream out(filename);
     if (out.is_open()) {
-        out << message;
+        out << key[0] << " " << key[1];
         out.close();
     }
 
-    cout << message << endl;
-    cout << "Message was written to the file!\n\n";
+    cout << key[0] << " " << key[1] << endl;
+    cout << "Key was written to the file!\n\n";
 }
 
 int main()
@@ -37,10 +40,8 @@ int main()
         {
             RSAGenerator generator;
             Keys keys = generator.getKeys();
-            std::ofstream file("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab4/public.key");
-            file << keys.PublicKey[0] << " " << keys.PublicKey[1];
-            std::ofstream private_file("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab4/private.key");
-            private_file << keys.PrivateKey[0] << " " << keys.PrivateKey[1];
+            writeKey(keys.PublicKey, publicFilename);
+            writeKey(keys.PrivateKey, privateFilename);
             break;
         }
         /*case 2:

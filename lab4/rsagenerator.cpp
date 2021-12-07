@@ -46,8 +46,8 @@ vector<unsigned int> RSAGenerator::getRandomPrimes()
 
 unsigned int RSAGenerator::generateE(unsigned int euler)
 {
-    unsigned int e = 17;
-    for (e = 17; e < euler; e++) {
+    unsigned int e = 5;
+    for (e = 5; e < euler; e++) {
         if (greatestCommonFactor(e, euler) == 1) {
             break;
         }
@@ -56,10 +56,11 @@ unsigned int RSAGenerator::generateE(unsigned int euler)
     return e;
 }
 
+//Мультипликативно обратное по модулю
 unsigned int RSAGenerator::generateD(unsigned int e, unsigned int euler)
 {
     vector<unsigned int> res = gcdx(e, euler);
-    unsigned int d = (res[1] % euler + euler) % euler;
+    unsigned int d = (res[1] % euler);
     return d;
 }
 
@@ -93,13 +94,14 @@ unsigned int greatestCommonFactor(unsigned int a, unsigned int b)
     return a;
 }
 
-vector<unsigned int> gcdx(unsigned int a, unsigned int b)
+//Расширенный алгоритм Евклида
+vector<unsigned int> gcfx(unsigned int a, unsigned int b)
 {
     if (a == 0) {
         return {b, 0, 1};
     }
 
-    vector<unsigned int> res = gcdx(b % a, a);
+    vector<unsigned int> res = gcfx(b % a, a);
     unsigned int x = res[2] - (b / a) * res[1];
     unsigned int y = res[1];
 
