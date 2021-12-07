@@ -59,7 +59,7 @@ unsigned int RSAGenerator::generateE(unsigned int euler)
 //Мультипликативно обратное по модулю
 unsigned int RSAGenerator::generateD(unsigned int e, unsigned int euler)
 {
-    vector<unsigned int> res = gcdx(e, euler);
+    vector<unsigned int> res = gcfx(e, euler);
     unsigned int d = (res[1] % euler);
     return d;
 }
