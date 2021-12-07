@@ -17,9 +17,6 @@ public:
     Keys getKeys();
 
 private:
-    std::mt19937 gen;
-    std::uniform_int_distribution<> e_distribution;
-
     std::vector<unsigned int> getRandomPrimes();
     unsigned int generateE(unsigned int euler);
     unsigned int generateD(unsigned int e, unsigned int phi);
