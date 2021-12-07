@@ -2,7 +2,7 @@
 
 using namespace std;
 
-vector<uint8_t> process_bytes(const vector<uint8_t> &data, key k, bool encrypt) {
+vector<unsigned int> process_bytes(const vector<unsigned int> &data, key k, bool encrypt) {
     vector<uint64_t> data_64(data.size());
     for (int i = 0; i < data.size(); i++)
         data_64[i] = (uint64_t) data[i];
@@ -11,9 +11,9 @@ vector<uint8_t> process_bytes(const vector<uint8_t> &data, key k, bool encrypt) 
     for (int i = 0; i < resized_data.size(); i++)
         encrypted_data[i] = binpow(resized_data[i], k.e, k.m);
     vector<uint64_t> result_64 = resize(encrypted_data, get_chunk_size(k) - !encrypt, 8);
-    vector<uint8_t> result(result_64.size());
+    vector<unsigned int> result(result_64.size());
     for (int i = 0; i < result_64.size(); i++)
-        result[i] = (uint8_t) result_64[i];
+        result[i] = (unsigned int) result_64[i];
     return result;
 }
 

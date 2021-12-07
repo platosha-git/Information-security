@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "iobytes.h"
 #include "rsagenerator.h"
 #include "rsa.h"
 
@@ -34,30 +35,6 @@ void writeKey(const vector<unsigned int> key, const string filename)
     cout << "Key was written to the file!\n\n";
 }
 
-vector<uint8_t> read_bytes(const char *filename) {
-    ifstream fin(filename);
-    fin.seekg(0, ios::end);
-    size_t len = fin.tellg();
-    auto *bytes = new char[len];
-    fin.seekg(0, ios::beg);
-    fin.read(bytes, len);
-    fin.close();
-    vector<uint8_t> ret(len);
-    for (int i = 0; i < len; i++)
-        ret[i] = (uint8_t) bytes[i];
-    delete[] bytes;
-    return ret;
-}
-
-void write_bytes(const char *filename, const vector<uint8_t> &data) {
-    ofstream fout(filename);
-    char *buf = new char[data.size()];
-    for (int i = 0; i < data.size(); i++)
-        buf[i] = (char) data[i];
-    fout.write(buf, data.size());
-    fout.close();
-}
-
 int main()
 {
     int choose = 0;
@@ -77,8 +54,9 @@ int main()
         case 2:
         {
             uint64_t e = 7, m = 5;
-            auto in = read_bytes(inputFilename.c_str());
-            write_bytes(encodeFilename.c_str(), process_bytes(in, {e, m}, true));
+            vector<unsigned int> message = readBytes(inputFilename);
+            vector<unsigned int> enMessage = process_bytes(message, {e, m}, true);
+            writeBytes(encodeFilename, enMessage);
             cout << "Done." << endl;
 
             break;
@@ -86,8 +64,9 @@ int main()
         case 3:
         {
             uint64_t e = 7, m = 5;
-            auto in = read_bytes(encodeFilename.c_str());
-            write_bytes(decodeFilename.c_str(), process_bytes(in, {e, m}, false));
+            vector<unsigned int> in = readBytes(encodeFilename);
+            vector<unsigned int> deMessage = process_bytes(in, {e, m}, false);
+            writeBytes(decodeFilename, deMessage);
             cout << "Done." << endl;
             break;
         }

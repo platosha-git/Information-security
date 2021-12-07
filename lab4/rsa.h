@@ -28,7 +28,7 @@ private:
     unsigned int binpow(unsigned int a, unsigned int n, unsigned int m);
 };
 
-std::vector<uint8_t> process_bytes(const std::vector<uint8_t> &data, key k, bool encrypt);
+std::vector<unsigned int> process_bytes(const std::vector<unsigned int> &data, key k, bool encrypt);
 uint8_t get_chunk_size(key k);
 std::vector<uint64_t> resize(const std::vector<uint64_t> &data, uint8_t in_size, uint8_t out_size);
 uint64_t binpow(uint64_t a, uint64_t e, uint64_t mod = LLONG_MAX);
