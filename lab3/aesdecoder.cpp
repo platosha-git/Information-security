@@ -29,6 +29,7 @@ void AEScoder::decode(string &message)
         }
     }
 
+    cout << "res = " << res[res.length() - 1];
     auto zeroes = res[res.length() - 1] + 16;
     if (zeroes > 0) {
         res = res.substr(0, res.size() - zeroes);
