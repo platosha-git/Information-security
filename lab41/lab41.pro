@@ -4,14 +4,14 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        bitifile.cpp \
-        bitofile.cpp \
+        inbytes.cpp \
         main.cpp \
+        outbytes.cpp \
         rsa.cpp \
         rsagenerator.cpp
 
 HEADERS += \
-    bitifile.h \
-    bitofile.h \
+    inbytes.h \
+    outbytes.h \
     rsa.h \
     rsagenerator.h

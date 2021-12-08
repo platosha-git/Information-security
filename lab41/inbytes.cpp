@@ -1,47 +1,44 @@
-#include "bitifile.h"
+#include "inbytes.h"
 
 using namespace std;
 
-BitIFile::BitIFile(const std::string &name)
+InBytes::InBytes(const string &filename)
 {
-    file.open(name, std::fstream::binary);
-    extra_bits = read_byte();
+    file.open(filename, fstream::binary);
+    addBits = readByte();
 }
 
-void BitIFile::close()
-{
-    file.close();
-}
-
-unsigned char BitIFile::read_byte()
+unsigned char InBytes::readByte()
 {
     if (file.eof()) {
-        throw std::logic_error("eof");
+        throw logic_error("eof");
     }
-    return static_cast<unsigned char>(file.get());
+
+    unsigned char byte = static_cast<unsigned char>(file.get());
+    return byte;
 }
 
-size_t BitIFile::read_number(unsigned char byte_n)
+size_t InBytes::getNumBytes(unsigned char byte_n)
 {
     size_t number = 0;
-    for (auto i = 0; i < byte_n; i++) {
+    for (int i = 0; i < byte_n; i++) {
         number <<= 8;
-        auto byte = read_byte();
+        unsigned char byte = readByte();
         number |= byte;
     }
     return number;
 }
 
-bool BitIFile::read_bit()
+unsigned char InBytes::readBit()
 {
-    if (read_bit_array.empty()) {
-        auto byte = read_byte();
+    if (bits.empty()) {
+        auto byte = readByte();
         // check the end of the file
         file.get();
 
         int end_bit_n = 0;
         if (file.eof()) {
-            end_bit_n += extra_bits;
+            end_bit_n += addBits;
         } else {
             file.unget();
         }
@@ -49,19 +46,19 @@ bool BitIFile::read_bit()
         auto result_bit = static_cast<bool>((byte >> 7) & 1);
         for (auto i = 6; i >= end_bit_n; i--) {
             auto bit = static_cast<bool>((byte >> i) & 1);
-            read_bit_array.push_back(bit);
+            bits.push_back(bit);
         }
 
         return result_bit;
     }
 
-    bool bit = read_bit_array[0];
-    read_bit_array.erase(read_bit_array.begin());
+    bool bit = bits[0];
+    bits.erase(bits.begin());
 
     return bit;
 }
 
-bool BitIFile::eof() {
+bool InBytes::isEof() {
     file.get();
     if (file.eof()) {
         file.unget();
@@ -69,6 +66,11 @@ bool BitIFile::eof() {
     }
     file.unget();
     return false;
+}
+
+void InBytes::close()
+{
+    file.close();
 }
 
 string getMessage(const std::string filename)

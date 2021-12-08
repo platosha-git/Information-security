@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include "bitofile.h"
-#include "bitifile.h"
+#include "outbytes.h"
+#include "inbytes.h"
 #include "rsagenerator.h"
 #include "rsa.h"
 
@@ -14,11 +14,11 @@ const string inputFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-secu
 const string encodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/encode";
 const string decodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/decode";
 
-unsigned char bytes_per_int(unsigned int n)
+unsigned char getNumBytes(unsigned int n)
 {
-    auto bits_per_freq = ceil(log2(static_cast<double>(n)));
-    auto bytes_per_freq = ceil(bits_per_freq / 8);
-    return static_cast<unsigned char>(bytes_per_freq);
+    double numBits = ceil(log2(static_cast<double>(n)));
+    double numBytes = ceil(numBits / 8);
+    return static_cast<unsigned char>(numBytes);
 }
 
 void writeKey(const vector<unsigned int> key, const string filename)
@@ -75,14 +75,14 @@ int main(void)
         {
             vector<unsigned int> publicKey = readKey(publicFilename);
             rsa.initPublicKey(publicKey);
-            unsigned char bytes = bytes_per_int(publicKey[1]);
+            unsigned char numBytes = getNumBytes(publicKey[1]);
 
             string message = getMessage(inputFilename);
-            BitOFile otp(encodeFilename);
+            OutBytes otp(encodeFilename);
 
             for (char& symbol : message) {
                 unsigned int enSymbol = rsa.encode(static_cast<unsigned char>(symbol));
-                otp.write_number(enSymbol, bytes);
+                otp.writeNumber(enSymbol, numBytes);
             }
 
             otp.close();
@@ -92,13 +92,13 @@ int main(void)
         {
             vector<unsigned int> privateKey = readKey(privateFilename);
             rsa.initPrivateKey(privateKey);
-            unsigned char bytes = bytes_per_int(privateKey[1]);
+            unsigned char numBytes = getNumBytes(privateKey[1]);
 
-            BitIFile inp(encodeFilename);
-            std::ofstream otp(decodeFilename, std::fstream::binary);
+            InBytes inp(encodeFilename);
+            ofstream otp(decodeFilename, fstream::binary);
 
-            while (!inp.eof()) {
-                size_t symbol = inp.read_number(bytes);
+            while (!inp.isEof()) {
+                size_t symbol = inp.getNumBytes(numBytes);
                 unsigned char deSymbol = rsa.decode(symbol);
                 otp.put(deSymbol);
             }
