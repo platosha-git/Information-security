@@ -84,8 +84,9 @@ int main(void)
                 unsigned int enSymbol = rsa.encode(static_cast<unsigned char>(symbol));
                 otp.writeSymbol(enSymbol, numBytes);
             }
-
             otp.close();
+
+            cout << "Message encrypted!\n\n";
             break;
         }
         case 3:
@@ -105,6 +106,8 @@ int main(void)
 
             inp.close();
             otp.close();
+
+            cout << "Message decrypted!\n\n";
             break;
         }
         default:
