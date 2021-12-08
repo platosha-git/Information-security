@@ -9,9 +9,8 @@ class InBytes {
 public:
     explicit InBytes(const std::string &filename);
 
-    unsigned char readBit();
     unsigned char readByte();
-    size_t getNumBytes(unsigned char byte);
+    size_t readSymbol(unsigned char numByte);
 
     bool isEof();
     void close();
@@ -19,7 +18,6 @@ public:
 private:
     std::ifstream file;
     std::vector<unsigned char> bits;
-    int addBits;
 };
 
 std::string getMessage(const std::string filename);

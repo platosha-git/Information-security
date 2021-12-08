@@ -5,7 +5,7 @@ using namespace std;
 InBytes::InBytes(const string &filename)
 {
     file.open(filename, fstream::binary);
-    addBits = readByte();
+    readByte();
 }
 
 unsigned char InBytes::readByte()
@@ -18,10 +18,10 @@ unsigned char InBytes::readByte()
     return byte;
 }
 
-size_t InBytes::getNumBytes(unsigned char byte_n)
+size_t InBytes::readSymbol(unsigned char numBytes)
 {
     size_t number = 0;
-    for (int i = 0; i < byte_n; i++) {
+    for (int i = 0; i < numBytes; i++) {
         number <<= 8;
         unsigned char byte = readByte();
         number |= byte;
@@ -29,36 +29,8 @@ size_t InBytes::getNumBytes(unsigned char byte_n)
     return number;
 }
 
-unsigned char InBytes::readBit()
+bool InBytes::isEof()
 {
-    if (bits.empty()) {
-        auto byte = readByte();
-        // check the end of the file
-        file.get();
-
-        int end_bit_n = 0;
-        if (file.eof()) {
-            end_bit_n += addBits;
-        } else {
-            file.unget();
-        }
-
-        auto result_bit = static_cast<bool>((byte >> 7) & 1);
-        for (auto i = 6; i >= end_bit_n; i--) {
-            auto bit = static_cast<bool>((byte >> i) & 1);
-            bits.push_back(bit);
-        }
-
-        return result_bit;
-    }
-
-    bool bit = bits[0];
-    bits.erase(bits.begin());
-
-    return bit;
-}
-
-bool InBytes::isEof() {
     file.get();
     if (file.eof()) {
         file.unget();

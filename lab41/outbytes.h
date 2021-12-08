@@ -10,13 +10,12 @@ public:
     explicit OutBytes(const std::string &filename);
 
     void writeBit(unsigned char bit);
-    void writeByte(unsigned char byte);
-    void writeNumber(size_t number, unsigned char byte);
+    void writeSymbol(unsigned int symbol, unsigned char numBytes);
 
     void close();
 
 private:
-    std::vector<bool> bits;
+    std::vector<unsigned char> bits;
     std::ofstream file;
 
     void flush();

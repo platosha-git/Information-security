@@ -82,7 +82,7 @@ int main(void)
 
             for (char& symbol : message) {
                 unsigned int enSymbol = rsa.encode(static_cast<unsigned char>(symbol));
-                otp.writeNumber(enSymbol, numBytes);
+                otp.writeSymbol(enSymbol, numBytes);
             }
 
             otp.close();
@@ -98,7 +98,7 @@ int main(void)
             ofstream otp(decodeFilename, fstream::binary);
 
             while (!inp.isEof()) {
-                size_t symbol = inp.getNumBytes(numBytes);
+                size_t symbol = inp.readSymbol(numBytes);
                 unsigned char deSymbol = rsa.decode(symbol);
                 otp.put(deSymbol);
             }
