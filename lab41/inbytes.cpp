@@ -61,4 +61,3 @@ string getMessage(const std::string filename)
 
     return message;
 }
-
