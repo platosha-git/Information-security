@@ -15,8 +15,8 @@ public:
     size_t read_number(unsigned char byte_n);
 
     bool eof();
-
     void close();
+
 private:
     std::vector<bool> read_bit_array;
     std::ifstream file;

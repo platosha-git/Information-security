@@ -14,11 +14,22 @@ const string inputFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-secu
 const string encodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/encode";
 const string decodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/decode";
 
-
 unsigned char bytes_per_int(unsigned int n) {
     auto bits_per_freq = std::ceil(std::log2(static_cast<double>(n)));
     auto bytes_per_freq = std::ceil(bits_per_freq / 8);
     return static_cast<unsigned char>(bytes_per_freq);
+}
+
+void writeKey(const vector<unsigned int> key, const string filename)
+{
+    ofstream out(filename);
+    if (out.is_open()) {
+        out << key[0] << " " << key[1];
+        out.close();
+    }
+
+    cout << key[0] << " " << key[1] << endl;
+    cout << "Key was written to the file!\n\n";
 }
 
 void menu()
@@ -31,7 +42,6 @@ void menu()
 
 int main(void)
 {
-    srand(time(0));
     int choose = 0;
     while (choose != 4) {
         menu();
@@ -40,13 +50,10 @@ int main(void)
         switch(choose) {
         case 1:
         {
-            RSAKeyGenerator generator;
-            auto keys = generator.generate_keys();
-            std::ofstream file(publicFilename);
-            file << keys.first.first << " " << keys.first.second;
-            std::ofstream private_file(privateFilename);
-            private_file << keys.second.first << " " << keys.second.second;
-            cout << "ok" << endl;
+            RSAGenerator generator;
+            Keys keys = generator.getKeys();
+            writeKey(keys.PublicKey, publicFilename);
+            writeKey(keys.PrivateKey, privateFilename);
             break;
         }
         case 2:

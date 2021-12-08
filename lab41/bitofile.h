@@ -1,6 +1,7 @@
 #ifndef BITOFILE_H
 #define BITOFILE_H
 
+
 #include <fstream>
 #include <vector>
 #include <string>
@@ -22,6 +23,5 @@ private:
 
     void flush();
 };
-
 
 #endif // BITOFILE_H
