@@ -23,4 +23,6 @@ private:
     int extra_bits;
 };
 
+std::string getMessage(const std::string filename);
+
 #endif // BITIFILE_H

@@ -14,7 +14,8 @@ const string inputFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-secu
 const string encodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/encode";
 const string decodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/decode";
 
-unsigned char bytes_per_int(unsigned int n) {
+unsigned char bytes_per_int(unsigned int n)
+{
     auto bits_per_freq = ceil(log2(static_cast<double>(n)));
     auto bytes_per_freq = ceil(bits_per_freq / 8);
     return static_cast<unsigned char>(bytes_per_freq);
@@ -76,19 +77,14 @@ int main(void)
             rsa.initPublicKey(publicKey);
             unsigned char bytes = bytes_per_int(publicKey[1]);
 
-            ifstream inp(inputFilename, std::fstream::binary);
+            string message = getMessage(inputFilename);
             BitOFile otp(encodeFilename);
 
-            while (!inp.eof()) {
-                char symbol = inp.get();
-                if (symbol < 0) {
-                    break;
-                }
+            for (char& symbol : message) {
                 unsigned int enSymbol = rsa.encode(static_cast<unsigned char>(symbol));
                 otp.write_number(enSymbol, bytes);
             }
 
-            inp.close();
             otp.close();
             break;
         }

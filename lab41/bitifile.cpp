@@ -1,22 +1,28 @@
 #include "bitifile.h"
 
-BitIFile::BitIFile(const std::string &name) {
+using namespace std;
+
+BitIFile::BitIFile(const std::string &name)
+{
     file.open(name, std::fstream::binary);
     extra_bits = read_byte();
 }
 
-void BitIFile::close() {
+void BitIFile::close()
+{
     file.close();
 }
 
-unsigned char BitIFile::read_byte() {
+unsigned char BitIFile::read_byte()
+{
     if (file.eof()) {
         throw std::logic_error("eof");
     }
     return static_cast<unsigned char>(file.get());
 }
 
-size_t BitIFile::read_number(unsigned char byte_n) {
+size_t BitIFile::read_number(unsigned char byte_n)
+{
     size_t number = 0;
     for (auto i = 0; i < byte_n; i++) {
         number <<= 8;
@@ -26,7 +32,8 @@ size_t BitIFile::read_number(unsigned char byte_n) {
     return number;
 }
 
-bool BitIFile::read_bit() {
+bool BitIFile::read_bit()
+{
     if (read_bit_array.empty()) {
         auto byte = read_byte();
         // check the end of the file
@@ -62,5 +69,22 @@ bool BitIFile::eof() {
     }
     file.unget();
     return false;
+}
+
+string getMessage(const std::string filename)
+{
+    string message = "";
+    ifstream inp(filename, std::fstream::binary);
+
+    while (!inp.eof()) {
+        char symbol = inp.get();
+        if (symbol < 0) {
+            break;
+        }
+        message += symbol;
+    }
+    inp.close();
+
+    return message;
 }
 
