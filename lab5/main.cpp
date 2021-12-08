@@ -1,13 +1,17 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+
 #include "sign.h"
+#include "ioput.h"
 
 using namespace std;
 
+const string privateFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/private.key";
+const string publicFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/public.key";
+
 const string documentFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/document";
 const string signatureFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/signature";
-
 
 void menu()
 {
@@ -20,7 +24,7 @@ int main(void)
 {
     OpenSSL_add_all_algorithms();
     EVP_PKEY *skey = nullptr, *vkey = nullptr;
-    byte *sig = nullptr;
+    unsigned char *sig = nullptr;
     size_t slen = 0;
 
     int choose = 0;
@@ -31,17 +35,18 @@ int main(void)
         switch (choose) {
         case 1:
         {
-            make_keys(&skey, &vkey);
-            write_keys(skey, vkey);
+            generateKeys(&skey, &vkey);
+            writeKeys(skey, publicFilename, vkey, privateFilename);
 
-            std::ifstream file(documentFilename, std::ios::binary | std::ios::ate);
-            std::streamsize size = file.tellg();
-            file.seekg(0, std::ios::beg);
+            ifstream file(documentFilename, ios::binary | ios::ate);
+            streamsize size = file.tellg();
+            file.seekg(0, ios::beg);
 
-            std::vector<unsigned char> buffer(static_cast<unsigned long>(size));
+            vector<unsigned char> buffer(static_cast<unsigned long>(size));
             file.read(reinterpret_cast<char *>(buffer.data()), size);
 
             sign(buffer.data(), buffer.size(), &sig, &slen, skey);
+
             write_sign(sig, slen, "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/output");
             printf("Created signature\n");
             print_labeled("Signature", sig, slen);

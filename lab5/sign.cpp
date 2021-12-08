@@ -1,8 +1,9 @@
 #include <cstring>
 #include "sign.h"
 
-
-int sign(const byte *msg, size_t mlen, byte **sig, size_t *slen, EVP_PKEY *pkey) {
+int sign(const unsigned char *msg, size_t mlen,
+         unsigned char **sig, size_t *slen, EVP_PKEY *pkey)
+{
     *sig = nullptr;
     *slen = 0;
 
@@ -17,7 +18,7 @@ int sign(const byte *msg, size_t mlen, byte **sig, size_t *slen, EVP_PKEY *pkey)
     size_t req = 0;
     EVP_DigestSignFinal(ctx, nullptr, &req);
 
-    *sig = static_cast<byte *>(OPENSSL_malloc(req));
+    *sig = static_cast<unsigned char *>(OPENSSL_malloc(req));
     *slen = req;
     EVP_DigestSignFinal(ctx, *sig, slen);
 
@@ -26,7 +27,7 @@ int sign(const byte *msg, size_t mlen, byte **sig, size_t *slen, EVP_PKEY *pkey)
     return 0;
 }
 
-int verify(const byte *msg, size_t mlen, const byte *sig, size_t slen, EVP_PKEY *pkey) {
+int verify(const unsigned char *msg, size_t mlen, const unsigned char *sig, size_t slen, EVP_PKEY *pkey) {
     EVP_MD_CTX *ctx = nullptr;
 
     ctx = EVP_MD_CTX_create();
@@ -53,7 +54,7 @@ int verify(const byte *msg, size_t mlen, const byte *sig, size_t slen, EVP_PKEY 
     return 0;
 }
 
-void print_labeled(const char *label, const byte *buff, size_t len) {
+void print_labeled(const char *label, const unsigned char *buff, size_t len) {
     if (!buff || !len) {
         return;
     }
@@ -69,45 +70,30 @@ void print_labeled(const char *label, const byte *buff, size_t len) {
     printf("\n");
 }
 
-int make_keys(EVP_PKEY **skey, EVP_PKEY **vkey) {
-    RSA *rsa = nullptr;
-
+void generateKeys(EVP_PKEY **skey, EVP_PKEY **vkey)
+{
     *skey = EVP_PKEY_new();
     *vkey = EVP_PKEY_new();
-    rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
+
+    RSA *rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
     EVP_PKEY_assign_RSA(*skey, RSAPrivateKey_dup(rsa));
     EVP_PKEY_assign_RSA(*vkey, RSAPublicKey_dup(rsa));
 
     RSA_free(rsa);
-
-    return 0;
-}
-
-void write_keys(EVP_PKEY *public_k, EVP_PKEY *private_k) {
-    FILE *pFile = nullptr;
-
-    pFile = fopen("privkey.pem", "wt");
-    PEM_write_PUBKEY(pFile, private_k);
-    fclose(pFile);
-
-    pFile = fopen("pubkey.pem", "wt");
-    PEM_write_PUBKEY(pFile, public_k);
-
-    fclose(pFile);
 }
 
 void read_keys(EVP_PKEY **public_k, EVP_PKEY **private_k) {
     FILE *pFile = nullptr;
 
-    pFile = fopen("privkey.pem", "rt");
+    pFile = fopen("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/private.key", "rt");
     *private_k = PEM_read_PUBKEY(pFile, nullptr, nullptr, nullptr);
     fclose(pFile);
 
-    pFile = fopen("pubkey.pem", "rt");
+    pFile = fopen("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/public.key", "rt");
     *public_k = PEM_read_PUBKEY(pFile, nullptr, nullptr, nullptr);
 }
 
-void write_sign(byte *sign, size_t len, char *filename) {
+void write_sign(unsigned char *sign, size_t len, char *filename) {
     std::ofstream file(filename);
     for (size_t i = 0; i < len; i++) {
         file.put(static_cast<char>(sign[i]));
@@ -115,14 +101,14 @@ void write_sign(byte *sign, size_t len, char *filename) {
     file.close();
 }
 
-size_t read_sign(byte **sign, char *filename) {
+size_t read_sign(unsigned char **sign, char *filename) {
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
 
     std::vector<unsigned char> buffer(static_cast<unsigned long>(size));
     file.read(reinterpret_cast<char *>(buffer.data()), size);
-    *sign = static_cast<byte *>(malloc(buffer.size()));
+    *sign = static_cast<unsigned char *>(malloc(buffer.size()));
     memcpy(*sign, buffer.data(), buffer.size());
 
     return buffer.size();
