@@ -15,8 +15,8 @@ const string encodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-sec
 const string decodeFilename = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab41/decode";
 
 unsigned char bytes_per_int(unsigned int n) {
-    auto bits_per_freq = std::ceil(std::log2(static_cast<double>(n)));
-    auto bytes_per_freq = std::ceil(bits_per_freq / 8);
+    auto bits_per_freq = ceil(log2(static_cast<double>(n)));
+    auto bytes_per_freq = ceil(bits_per_freq / 8);
     return static_cast<unsigned char>(bytes_per_freq);
 }
 
@@ -32,6 +32,18 @@ void writeKey(const vector<unsigned int> key, const string filename)
     cout << "Key was written to the file!\n\n";
 }
 
+vector<unsigned int> readKey(const string filename)
+{
+    vector<unsigned int> key(2, 0);
+    ifstream in(filename);
+    if (in.is_open()) {
+        in >> key[0] >> key[1];
+        in.close();
+    }
+
+    return key;
+}
+
 void menu()
 {
     cout << "Genereate keys......1" << endl;
@@ -43,6 +55,8 @@ void menu()
 int main(void)
 {
     int choose = 0;
+    RSA rsa;
+
     while (choose != 4) {
         menu();
         cin >> choose;
@@ -52,48 +66,45 @@ int main(void)
         {
             RSAGenerator generator;
             Keys keys = generator.getKeys();
-            writeKey(keys.PublicKey, publicFilename);
-            writeKey(keys.PrivateKey, privateFilename);
+            writeKey(keys.PublicKey, "public.key");
+            writeKey(keys.PrivateKey, "private.key");
             break;
         }
         case 2:
         {
-            std::ifstream inp(inputFilename, std::fstream::binary);
-            BitOFile otp(encodeFilename);
-            std::ifstream key(publicFilename);
-            unsigned int e, n;
-            key >> e >> n;
-            auto bytes = bytes_per_int(n);
+            vector<unsigned int> publicKey = readKey(publicFilename);
+            rsa.initPublicKey(publicKey);
+            unsigned char bytes = bytes_per_int(publicKey[1]);
 
-            RSA rsa;
-            rsa.set_open_key(e, n);
+            ifstream inp(inputFilename, std::fstream::binary);
+            BitOFile otp(encodeFilename);
+
             while (!inp.eof()) {
-                auto symbol = inp.get();
+                char symbol = inp.get();
                 if (symbol < 0) {
                     break;
                 }
-                auto encoded = rsa.encode(static_cast<unsigned char>(symbol));
-                otp.write_number(encoded, bytes);
+                unsigned int enSymbol = rsa.encode(static_cast<unsigned char>(symbol));
+                otp.write_number(enSymbol, bytes);
             }
+
             inp.close();
             otp.close();
             break;
         }
         case 3:
         {
+            vector<unsigned int> privateKey = readKey(privateFilename);
+            rsa.initPrivateKey(privateKey);
+            unsigned char bytes = bytes_per_int(privateKey[1]);
+
             BitIFile inp(encodeFilename);
             std::ofstream otp(decodeFilename, std::fstream::binary);
-            std::ifstream key(privateFilename);
-            unsigned int d, n;
-            key >> d >> n;
-            auto bytes = bytes_per_int(n);
 
-            RSA rsa;
-            rsa.set_private_key(d, n);
             while (!inp.eof()) {
-                auto symbol = inp.read_number(bytes);
-                auto decoded = rsa.decode(symbol);
-                otp.put(decoded);
+                size_t symbol = inp.read_number(bytes);
+                unsigned char deSymbol = rsa.decode(symbol);
+                otp.put(deSymbol);
             }
 
             inp.close();

@@ -1,15 +1,12 @@
 #ifndef RSA_H
 #define RSA_H
 
-
-#include <cmath>
+#include <vector>
 
 class RSA {
 public:
-    explicit RSA() = default;;
-
-    void set_open_key(unsigned int e, unsigned int n);
-    void set_private_key(unsigned int d, unsigned int n);
+    void initPublicKey(std::vector<unsigned int> publicKey);
+    void initPrivateKey(std::vector<unsigned int> privateKey);
     unsigned int encode(unsigned char symbol);
     unsigned char decode(unsigned int symbol);
 

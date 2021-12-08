@@ -1,4 +1,7 @@
+#include <vector>
 #include "rsa.h"
+
+using namespace std;
 
 unsigned int RSA::binpow(unsigned int a, unsigned int n, unsigned int m) {
     unsigned int res = 1;
@@ -19,9 +22,10 @@ unsigned int RSA::encode(unsigned char symbol) {
     return encoded;
 }
 
-void RSA::set_open_key(unsigned int e, unsigned int n) {
-    this->e = e;
-    this->n = n;
+void RSA::initPublicKey(vector<unsigned int> publicKey)
+{
+    e = publicKey[0];
+    n = publicKey[1];
 }
 
 unsigned char RSA::decode(unsigned int symbol) {
@@ -29,7 +33,8 @@ unsigned char RSA::decode(unsigned int symbol) {
     return static_cast<unsigned char>(decoded);
 }
 
-void RSA::set_private_key(unsigned int d, unsigned int n) {
-    this->d = d;
-    this->n = n;
+void RSA::initPrivateKey(std::vector<unsigned int> privateKey)
+{
+    d = privateKey[0];
+    n = privateKey[1];
 }
