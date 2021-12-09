@@ -1,6 +1,18 @@
 #include <cstring>
 #include "sign.h"
 
+void generateKeys(EVP_PKEY **skey, EVP_PKEY **vkey)
+{
+    *skey = EVP_PKEY_new();
+    *vkey = EVP_PKEY_new();
+
+    RSA *rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
+    EVP_PKEY_assign_RSA(*skey, RSAPrivateKey_dup(rsa));
+    EVP_PKEY_assign_RSA(*vkey, RSAPublicKey_dup(rsa));
+
+    RSA_free(rsa);
+}
+
 int sign(const unsigned char *msg, size_t mlen,
          unsigned char **sig, size_t *slen, EVP_PKEY *pkey)
 {
@@ -27,7 +39,9 @@ int sign(const unsigned char *msg, size_t mlen,
     return 0;
 }
 
-int verify(const unsigned char *msg, size_t mlen, const unsigned char *sig, size_t slen, EVP_PKEY *pkey) {
+int verify(const unsigned char *msg, size_t mlen,
+           const unsigned char *sig, size_t slen, EVP_PKEY *pkey)
+{
     EVP_MD_CTX *ctx = nullptr;
 
     ctx = EVP_MD_CTX_create();
@@ -49,43 +63,6 @@ int verify(const unsigned char *msg, size_t mlen, const unsigned char *sig, size
         return -1;
     }
 
-
     EVP_MD_CTX_destroy(ctx);
     return 0;
-}
-
-void generateKeys(EVP_PKEY **skey, EVP_PKEY **vkey)
-{
-    *skey = EVP_PKEY_new();
-    *vkey = EVP_PKEY_new();
-
-    RSA *rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
-    EVP_PKEY_assign_RSA(*skey, RSAPrivateKey_dup(rsa));
-    EVP_PKEY_assign_RSA(*vkey, RSAPublicKey_dup(rsa));
-
-    RSA_free(rsa);
-}
-
-void read_keys(EVP_PKEY **public_k, EVP_PKEY **private_k) {
-    FILE *pFile = nullptr;
-
-    pFile = fopen("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/private.key", "rt");
-    *private_k = PEM_read_PUBKEY(pFile, nullptr, nullptr, nullptr);
-    fclose(pFile);
-
-    pFile = fopen("/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/public.key", "rt");
-    *public_k = PEM_read_PUBKEY(pFile, nullptr, nullptr, nullptr);
-}
-
-size_t read_sign(unsigned char **sign, char *filename) {
-    std::ifstream file(filename, std::ios::binary | std::ios::ate);
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<unsigned char> buffer(static_cast<unsigned long>(size));
-    file.read(reinterpret_cast<char *>(buffer.data()), size);
-    *sign = static_cast<unsigned char *>(malloc(buffer.size()));
-    memcpy(*sign, buffer.data(), buffer.size());
-
-    return buffer.size();
 }

@@ -53,17 +53,17 @@ int main(void)
         }
         case 2:
         {
-            read_keys(&skey, &vkey);
-            slen = read_sign(&sig, "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/signature");
+            readKeys(&skey, publicFilename, &vkey, privateFilename);
+            slen = readSignature(&sig, signatureFilename);
 
-            std::ifstream file(documentFilename, std::ios::binary | std::ios::ate);
-            std::streamsize size = file.tellg();
-            file.seekg(0, std::ios::beg);
+            ifstream file(documentFilename, ios::binary | ios::ate);
+            streamsize size = file.tellg();
+            file.seekg(0, ios::beg);
 
-            std::vector<unsigned char> buffer(static_cast<unsigned long>(size));
+            vector<unsigned char> buffer(static_cast<unsigned long>(size));
             file.read(reinterpret_cast<char *>(buffer.data()), size);
 
-            auto rc = verify(buffer.data(), buffer.size(), sig, slen, vkey);
+            int rc = verify(buffer.data(), buffer.size(), sig, slen, vkey);
             if (rc == 0) {
                 printf("Verified signature\n\n");
             } else {
