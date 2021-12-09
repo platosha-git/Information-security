@@ -17,10 +17,8 @@ int sign(const unsigned char *msg, size_t mlen,
          unsigned char **sig, size_t *slen, EVP_PKEY *pkey);
 
 int verify(const unsigned char *msg, size_t mlen, const unsigned char *sig, size_t slen, EVP_PKEY *pkey);
-void print_labeled(const char *label, const unsigned char *buff, size_t len);
 
 void read_keys(EVP_PKEY **public_k, EVP_PKEY **private_k);
-void write_sign(unsigned char *sign, size_t len, char *filename);
 size_t read_sign(unsigned char **sign, char *filename);
 
 

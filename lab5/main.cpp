@@ -47,15 +47,14 @@ int main(void)
 
             sign(buffer.data(), buffer.size(), &sig, &slen, skey);
 
-            write_sign(sig, slen, "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/output");
-            printf("Created signature\n");
-            print_labeled("Signature", sig, slen);
+            writeSignature(sig, slen, signatureFilename);
+            cout << "Document was signed!" << endl << endl;
             break;
         }
         case 2:
         {
             read_keys(&skey, &vkey);
-            slen = read_sign(&sig, "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/output");
+            slen = read_sign(&sig, "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab5/signature");
 
             std::ifstream file(documentFilename, std::ios::binary | std::ios::ate);
             std::streamsize size = file.tellg();
