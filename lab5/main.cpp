@@ -23,9 +23,12 @@ void menu()
 int main(void)
 {
     OpenSSL_add_all_algorithms();
-    EVP_PKEY *skey = nullptr, *vkey = nullptr;
-    unsigned char *sig = nullptr;
-    size_t slen = 0;
+
+    EVP_PKEY *publicKey = EVP_PKEY_new();
+    EVP_PKEY *privateKey = EVP_PKEY_new();
+
+    unsigned char *signature = nullptr;
+    size_t sigLen = 0;
 
     int choose = 0;
     while (choose != 3) {
@@ -35,8 +38,8 @@ int main(void)
         switch (choose) {
         case 1:
         {
-            generateKeys(&skey, &vkey);
-            writeKeys(skey, publicFilename, vkey, privateFilename);
+            generateKeys(publicKey, privateKey);
+            writeKeys(publicKey, publicFilename, privateKey, privateFilename);
 
             ifstream file(documentFilename, ios::binary | ios::ate);
             streamsize size = file.tellg();
@@ -45,16 +48,16 @@ int main(void)
             vector<unsigned char> buffer(static_cast<unsigned long>(size));
             file.read(reinterpret_cast<char *>(buffer.data()), size);
 
-            sign(buffer.data(), buffer.size(), &sig, &slen, skey);
+            sign(buffer.data(), buffer.size(), &signature, &sigLen, privateKey);
 
-            writeSignature(sig, slen, signatureFilename);
+            writeSignature(signature, sigLen, signatureFilename);
             cout << "Document was signed!" << endl << endl;
             break;
         }
         case 2:
         {
-            readKeys(&skey, publicFilename, &vkey, privateFilename);
-            slen = readSignature(&sig, signatureFilename);
+            readKeys(&publicKey, publicFilename, &privateKey, privateFilename);
+            sigLen = readSignature(&signature, signatureFilename);
 
             ifstream file(documentFilename, ios::binary | ios::ate);
             streamsize size = file.tellg();
@@ -63,7 +66,7 @@ int main(void)
             vector<unsigned char> buffer(static_cast<unsigned long>(size));
             file.read(reinterpret_cast<char *>(buffer.data()), size);
 
-            int rc = verify(buffer.data(), buffer.size(), sig, slen, vkey);
+            int rc = verify(buffer.data(), buffer.size(), signature, sigLen, privateKey);
             if (rc == 0) {
                 printf("Verified signature\n\n");
             } else {
@@ -76,9 +79,9 @@ int main(void)
         }
     }
 
-    OPENSSL_free(sig);
-    EVP_PKEY_free(skey);
-    EVP_PKEY_free(vkey);
+    OPENSSL_free(signature);
+    EVP_PKEY_free(publicKey);
+    EVP_PKEY_free(privateKey);
 
     return 0;
 }

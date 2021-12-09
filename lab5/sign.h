@@ -10,10 +10,10 @@
 
 const char hn[] = "SHA256";
 
-void generateKeys(EVP_PKEY **skey, EVP_PKEY **vkey);
+void generateKeys(EVP_PKEY *publicKey, EVP_PKEY *privateKey);
 int sign(const unsigned char *msg, size_t mlen,
-         unsigned char **sig, size_t *slen, EVP_PKEY *pkey);
+         unsigned char **sig, size_t *slen, EVP_PKEY *publicKey);
 int verify(const unsigned char *msg, size_t mlen,
-           const unsigned char *sig, size_t slen, EVP_PKEY *pkey);
+           const unsigned char *sig, size_t slen, EVP_PKEY *privateKey);
 
 #endif // SIGN_H

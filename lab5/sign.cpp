@@ -1,20 +1,18 @@
 #include <cstring>
 #include "sign.h"
 
-void generateKeys(EVP_PKEY **skey, EVP_PKEY **vkey)
+void generateKeys(EVP_PKEY *publicKey, EVP_PKEY *privateKey)
 {
-    *skey = EVP_PKEY_new();
-    *vkey = EVP_PKEY_new();
-
     RSA *rsa = RSA_generate_key(2048, RSA_F4, NULL, NULL);
-    EVP_PKEY_assign_RSA(*skey, RSAPrivateKey_dup(rsa));
-    EVP_PKEY_assign_RSA(*vkey, RSAPublicKey_dup(rsa));
+
+    EVP_PKEY_assign_RSA(privateKey, RSAPrivateKey_dup(rsa));
+    EVP_PKEY_assign_RSA(publicKey, RSAPublicKey_dup(rsa));
 
     RSA_free(rsa);
 }
 
 int sign(const unsigned char *msg, size_t mlen,
-         unsigned char **sig, size_t *slen, EVP_PKEY *pkey)
+         unsigned char **sig, size_t *slen, EVP_PKEY *publicKey)
 {
     *sig = nullptr;
     *slen = 0;
@@ -24,7 +22,7 @@ int sign(const unsigned char *msg, size_t mlen,
     ctx = EVP_MD_CTX_create();
     const EVP_MD *md = EVP_get_digestbyname(hn);
     EVP_DigestInit_ex(ctx, md, nullptr);
-    EVP_DigestSignInit(ctx, nullptr, md, nullptr, pkey);
+    EVP_DigestSignInit(ctx, nullptr, md, nullptr, publicKey);
     EVP_DigestSignUpdate(ctx, msg, mlen);
 
     size_t req = 0;
@@ -40,7 +38,7 @@ int sign(const unsigned char *msg, size_t mlen,
 }
 
 int verify(const unsigned char *msg, size_t mlen,
-           const unsigned char *sig, size_t slen, EVP_PKEY *pkey)
+           const unsigned char *sig, size_t slen, EVP_PKEY *privateKey)
 {
     EVP_MD_CTX *ctx = nullptr;
 
@@ -48,7 +46,7 @@ int verify(const unsigned char *msg, size_t mlen,
     const EVP_MD *md = EVP_get_digestbyname(hn);
     EVP_DigestInit_ex(ctx, md, nullptr);
 
-    int rc = EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, pkey);
+    int rc = EVP_DigestVerifyInit(ctx, nullptr, md, nullptr, privateKey);
     if (rc != 1) {
         EVP_MD_CTX_destroy(ctx);
         return -2;
