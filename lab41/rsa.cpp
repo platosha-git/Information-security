@@ -3,19 +3,19 @@
 
 using namespace std;
 
-unsigned int RSA::binpow(unsigned int a, unsigned int n, unsigned int m)
+unsigned int RSA::binpow(unsigned int a, unsigned int n, unsigned int mod)
 {
     unsigned int res = 1;
     while (n) {
         if (n & 1) {
             res *= a;
-            res %= m;
+            res %= mod;
         }
-        a *= (a % m);
-        a %= m;
+        a *= (a % mod);
+        a %= mod;
         n >>= 1;
     }
-    return res % m;
+    return res % mod;
 }
 
 void RSA::initPublicKey(vector<unsigned int> publicKey)

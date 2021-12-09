@@ -5,7 +5,7 @@ using namespace std;
 InBytes::InBytes(const string &filename)
 {
     file.open(filename, fstream::binary);
-    readByte();
+    file.get();
 }
 
 unsigned char InBytes::readByte()

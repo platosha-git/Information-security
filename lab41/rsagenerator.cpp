@@ -46,7 +46,7 @@ unsigned int RSAGenerator::generateE(unsigned int euler)
 {
     unsigned int e = 5;
     for (e = 5; e < euler; e++) {
-        if (greatestCommonFactor(e, euler) == 1) {
+        if (gcf(e, euler) == 1) {
             break;
         }
     }
@@ -82,7 +82,7 @@ vector<unsigned int> getTable()
 }
 
 //Наибольший общий делитель
-unsigned int greatestCommonFactor(unsigned int a, unsigned int b)
+unsigned int gcf(unsigned int a, unsigned int b)
 {
     while (b > 0) {
         a %= b;
