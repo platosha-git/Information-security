@@ -1,9 +1,7 @@
 #ifndef SIGN_H
 #define SIGN_H
 
-#include <openssl/evp.h>
 #include <openssl/err.h>
-#include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <fstream>
 #include <vector>
