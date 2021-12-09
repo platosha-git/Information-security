@@ -41,16 +41,10 @@ int main(void)
             generateKeys(publicKey, privateKey);
             writeKeys(publicKey, publicFilename, privateKey, privateFilename);
 
-            ifstream file(documentFilename, ios::binary | ios::ate);
-            streamsize size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            vector<unsigned char> buffer(static_cast<unsigned long>(size));
-            file.read(reinterpret_cast<char *>(buffer.data()), size);
-
-            sign(buffer.data(), buffer.size(), &signature, &sigLen, privateKey);
-
+            vector<unsigned char> document = readDocument(documentFilename);
+            sign(document.data(), document.size(), &signature, &sigLen, privateKey);
             writeSignature(signature, sigLen, signatureFilename);
+
             cout << "Document was signed!" << endl << endl;
             break;
         }
@@ -58,19 +52,14 @@ int main(void)
         {
             readKeys(&publicKey, publicFilename, &privateKey, privateFilename);
             sigLen = readSignature(&signature, signatureFilename);
+            vector<unsigned char> document = readDocument(documentFilename);
 
-            ifstream file(documentFilename, ios::binary | ios::ate);
-            streamsize size = file.tellg();
-            file.seekg(0, ios::beg);
-
-            vector<unsigned char> buffer(static_cast<unsigned long>(size));
-            file.read(reinterpret_cast<char *>(buffer.data()), size);
-
-            int rc = verify(buffer.data(), buffer.size(), signature, sigLen, privateKey);
-            if (rc == 0) {
-                printf("Verified signature\n\n");
-            } else {
-                printf("Failed to verify signature, return code %d\n", rc);
+            int exitCode = verify(document.data(), document.size(), signature, sigLen, publicKey);
+            if (exitCode == 0) {
+                cout << "Verified signature" << endl << endl;
+            }
+            else {
+                cout << "Failed to verify signature, return code " << exitCode << endl << endl;
             }
             break;
         }

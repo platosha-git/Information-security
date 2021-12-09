@@ -19,16 +19,16 @@ void writeKey(EVP_PKEY *key, const string filename)
     fclose(file);
 }
 
-void writeSignature(unsigned char *sign, size_t len, const string filename)
+void writeSignature(unsigned char *signature, size_t len, const string filename)
 {
     ofstream file(filename);
     if (file.is_open()) {
         for (size_t i = 0; i < len; i++) {
-            file.put(static_cast<char>(sign[i]));
+            file.put(static_cast<char>(signature[i]));
         }
         file.close();
 
-        outputSignature(sign, len);
+        outputSignature(signature, len);
     }
 }
 
@@ -57,6 +57,18 @@ void readKey(EVP_PKEY **key, const string filename)
     FILE *file = fopen(filename.c_str(), "rt");
     *key = PEM_read_PUBKEY(file, nullptr, nullptr, nullptr);
     fclose(file);
+}
+
+vector<unsigned char> readDocument(const string filename)
+{
+    ifstream file(filename, ios::binary | ios::ate);
+    streamsize size = file.tellg();
+    file.seekg(0, ios::beg);
+
+    vector<unsigned char> buffer(static_cast<unsigned long>(size));
+    file.read(reinterpret_cast<char *>(buffer.data()), size);
+
+    return buffer;
 }
 
 size_t readSignature(unsigned char **sign, const string filename)
