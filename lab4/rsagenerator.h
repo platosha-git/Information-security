@@ -23,7 +23,7 @@ private:
 };
 
 std::vector<unsigned int> getTable();
-unsigned int greatestCommonFactor(unsigned int a, unsigned int b);
+unsigned int gcf(unsigned int a, unsigned int b);
 std::vector<unsigned int> gcfx(unsigned int a, unsigned int b);
 
 #endif // RSAGENERATOR_H
