@@ -1,37 +1,49 @@
 #include <stdexcept>
 #include "treenode.h"
 
-TreeNode::TreeNode(unsigned char byte, size_t priority)
-    : _byte(byte), _left(nullptr), _right(nullptr), _priority(priority) {
+TreeNode::TreeNode(unsigned char _byte, int _frequency) :
+    left(nullptr), right(nullptr),
+    byte(_byte),
+    frequency(_frequency)
+{
+
 }
 
-TreeNode::~TreeNode() {
-    delete _left;
-    delete _right;
+TreeNode::~TreeNode()
+{
+    delete left;
+    delete right;
 }
 
-void TreeNode::add_child(TreeNode *child) {
-    if (!_left) {
-        _left = child;
-    } else if (!_right) {
-        _right = child;
-    } else {
+void TreeNode::addChild(TreeNode *child)
+{
+    if (!left) {
+        left = child;
+    }
+    else if (!right) {
+        right = child;
+    }
+    else {
         throw std::logic_error("already 2 children");
     }
 }
 
-unsigned char TreeNode::get_byte() const {
-    return _byte;
+unsigned char TreeNode::getByte() const
+{
+    return byte;
 }
 
-TreeNode *TreeNode::get_left() const {
-    return _left;
+TreeNode *TreeNode::getLeft() const
+{
+    return left;
 }
 
-TreeNode *TreeNode::get_right() const {
-    return _right;
+TreeNode *TreeNode::getRight() const
+{
+    return right;
 }
 
-size_t TreeNode::get_priority() const {
-    return _priority;
+int TreeNode::getFrequency() const
+{
+    return frequency;
 }

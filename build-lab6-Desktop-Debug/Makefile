@@ -52,15 +52,15 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../lab6/bitifile.cpp \
-		../lab6/bitofile.cpp \
-		../lab6/huffman.cpp \
+SOURCES       = ../lab6/huffman.cpp \
+		../lab6/inbytes.cpp \
 		../lab6/main.cpp \
+		../lab6/outbytes.cpp \
 		../lab6/treenode.cpp 
-OBJECTS       = bitifile.o \
-		bitofile.o \
-		huffman.o \
+OBJECTS       = huffman.o \
+		inbytes.o \
 		main.o \
+		outbytes.o \
 		treenode.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -132,13 +132,13 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../lab6/lab6.pro bitifile.h \
-		bitofile.h \
-		huffman.h \
-		treenode.h ../lab6/bitifile.cpp \
-		../lab6/bitofile.cpp \
-		../lab6/huffman.cpp \
+		../lab6/lab6.pro huffman.h \
+		inbytes.h \
+		outbytes.h \
+		treenode.h ../lab6/huffman.cpp \
+		../lab6/inbytes.cpp \
 		../lab6/main.cpp \
+		../lab6/outbytes.cpp \
 		../lab6/treenode.cpp
 QMAKE_TARGET  = lab6
 DESTDIR       = 
@@ -337,21 +337,23 @@ compiler_clean:
 
 ####### Compile
 
-bitifile.o: ../lab6/bitifile.cpp ../lab6/bitifile.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bitifile.o ../lab6/bitifile.cpp
-
-bitofile.o: ../lab6/bitofile.cpp ../lab6/bitofile.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bitofile.o ../lab6/bitofile.cpp
-
 huffman.o: ../lab6/huffman.cpp ../lab6/huffman.h \
 		../lab6/treenode.h \
-		../lab6/bitofile.h
+		../lab6/inbytes.h \
+		../lab6/outbytes.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o huffman.o ../lab6/huffman.cpp
+
+inbytes.o: ../lab6/inbytes.cpp ../lab6/inbytes.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o inbytes.o ../lab6/inbytes.cpp
 
 main.o: ../lab6/main.cpp ../lab6/huffman.h \
 		../lab6/treenode.h \
-		../lab6/bitofile.h
+		../lab6/inbytes.h \
+		../lab6/outbytes.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../lab6/main.cpp
+
+outbytes.o: ../lab6/outbytes.cpp ../lab6/outbytes.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o outbytes.o ../lab6/outbytes.cpp
 
 treenode.o: ../lab6/treenode.cpp ../lab6/treenode.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o treenode.o ../lab6/treenode.cpp

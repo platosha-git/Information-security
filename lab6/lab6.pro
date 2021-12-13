@@ -4,14 +4,14 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        bitifile.cpp \
-        bitofile.cpp \
         huffman.cpp \
+        inbytes.cpp \
         main.cpp \
+        outbytes.cpp \
         treenode.cpp
 
 HEADERS += \
-    bitifile.h \
-    bitofile.h \
     huffman.h \
+    inbytes.h \
+    outbytes.h \
     treenode.h

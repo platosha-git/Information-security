@@ -1,24 +1,23 @@
 #ifndef TREENODE_H
 #define TREENODE_H
 
-
 class TreeNode {
 public:
-    explicit TreeNode(unsigned char byte, size_t priority);
+    explicit TreeNode(unsigned char _byte, int _frequency);
 
-    void add_child(TreeNode *child);
+    void addChild(TreeNode *child);
+    TreeNode *getLeft() const;
+    TreeNode *getRight() const;
 
-    unsigned char get_byte() const;
-    TreeNode *get_left() const;
-    TreeNode *get_right() const;
-    size_t get_priority() const;
+    unsigned char getByte() const;
+    int getFrequency() const;
 
     ~TreeNode();
+
 private:
-    unsigned char _byte;
-    size_t _priority;
-    TreeNode *_left;
-    TreeNode *_right;
+    TreeNode *left, *right;
+    unsigned char byte;
+    int frequency;
 };
 
 #endif // TREENODE_H

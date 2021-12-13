@@ -1,7 +1,6 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
-
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -11,8 +10,8 @@
 #include <unordered_map>
 #include <set>
 #include "treenode.h"
-#include "bitifile.h"
-#include "bitofile.h"
+#include "inbytes.h"
+#include "outbytes.h"
 
 using HTable = std::unordered_map<unsigned char, std::string>;
 
@@ -20,13 +19,13 @@ class Huffman {
 public:
     Huffman() = default;
 
-    void compress(std::string inp_file, std::string otp_file);
-    void decompress(std::string inp_file, std::string otp_file);
+    void compress(std::string inFile, std::string outFile);
+    void decompress(std::string inFile, std::string outFile);
+
 private:
-    std::vector<size_t> get_priorities(const std::string &filename);
-    TreeNode *get_h_tree(const std::vector<size_t> &priorities);
+    TreeNode *get_h_tree(const std::vector<int> &priorities);
     void build_h_table(const TreeNode *h_tree, HTable &table, std::string str);
-    TreeNode *read_h_tree(BitIFile &file);
+    TreeNode *read_h_tree(InBytes &file);
 };
 
 #endif // HUFFMAN_H
