@@ -11,7 +11,7 @@ public:
 
     void writeBit(unsigned char bit);
     void writeByte(unsigned char byte);
-    void writeSymbol(unsigned int symbol, unsigned char numBytes);
+    void writeNumber(unsigned int number, unsigned char numBytes);
 
     void close();
 

@@ -1,17 +1,11 @@
 #include "huffman.h"
+#include "iofrequency.cpp"
 
 using namespace std;
 
 Huffman::Huffman()
 {
     frequency = vector<int>(256, 0);
-}
-
-unsigned char getNumBytes(unsigned int n)
-{
-    double numBits = ceil(log2(static_cast<double>(n)));
-    double numBytes = ceil(numBits / 8);
-    return static_cast<unsigned char>(numBytes);
 }
 
 void Huffman::compress(string inFile, string outFile)
@@ -22,20 +16,10 @@ void Huffman::compress(string inFile, string outFile)
     HTable table;
     buildHTable(tree, table, "");
 
+    writeFrequncy(table, frequency);
+
     ifstream file(inFile, ios::binary);
     OutBytes output(outFile);
-
-    size_t tableSize = table.size() - 1;
-    output.writeByte(static_cast<unsigned char>(tableSize));
-
-    size_t max = *max_element(frequency.begin(), frequency.end());
-    unsigned char numBytes = getNumBytes(max);
-    output.writeByte(numBytes);
-
-    for (auto &elem: table) {
-        output.writeByte(elem.first);
-        output.writeSymbol(frequency[elem.first], numBytes);
-    }
 
     while (true) {
         unsigned char symbol = file.get();
@@ -54,15 +38,14 @@ void Huffman::compress(string inFile, string outFile)
 
 void Huffman::decompress(string inFile, string outFile)
 {
-    InBytes file(inFile);
-    ofstream output(outFile, fstream::binary);
-
-    frequency = file.readFrequency();
+    frequency = readFrequency();
     TreeNode *tree = buildHTree();
 
     HTable table;
     buildHTable(tree, table, "");
 
+    InBytes file(inFile);
+    ofstream output(outFile, fstream::binary);
     string code = "";
     while (!file.isEof()) {
         bool bit = file.readBit();
@@ -92,34 +75,34 @@ TreeNode *Huffman::buildHTree()
         return false;
     };
 
-    set<TreeNode *, decltype(cmp)> queue(cmp);
+    //Формирование списка свободных узлов
+    set<TreeNode *, decltype(cmp)> list(cmp);
     for (size_t i = 0; i < frequency.size(); i++) {
         if (frequency[i] == 0) {
             continue;
         }
 
         TreeNode *node = new TreeNode(static_cast<unsigned char>(i), frequency[i]);
-        queue.insert(node);
+        list.insert(node);
     }
 
-    while (queue.size() > 1) {
-        TreeNode *node1 = *queue.begin();
-        queue.erase(queue.begin());
+    while (list.size() > 1) {
+        TreeNode *node1 = *list.begin();
+        list.erase(list.begin());
 
-        TreeNode *node2 = *queue.begin();
-        queue.erase(queue.begin());
+        TreeNode *node2 = *list.begin();
+        list.erase(list.begin());
 
         TreeNode *newNode = new TreeNode(0, node1->getFrequency() + node2->getFrequency());
         newNode->addChild(node2);
         newNode->addChild(node1);
 
-        queue.insert(newNode);
+        list.insert(newNode);
     }
 
-    return *queue.begin();
+    return *list.begin();
 }
 
-// Построение таблицы Хаффмана на основе дерева
 void Huffman::buildHTable(const TreeNode *root, HTable &table, string code)
 {
     if (!root) {
@@ -131,6 +114,6 @@ void Huffman::buildHTable(const TreeNode *root, HTable &table, string code)
         return;
     }
 
-    buildHTable(root->getLeft(), table, code + '0');
-    buildHTable(root->getRight(), table, code + '1');
+    buildHTable(root->getLeft(), table, code + '1');
+    buildHTable(root->getRight(), table, code + '0');
 }

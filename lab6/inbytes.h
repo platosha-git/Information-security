@@ -12,7 +12,6 @@ public:
     bool readBit();
     unsigned char readByte();
     size_t readSymbol(unsigned char numByte);
-    std::vector<int> readFrequency();
 
     bool isEof();
     void close();

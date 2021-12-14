@@ -8,7 +8,7 @@ OutBytes::OutBytes(const string &filename)
     file.put(0);
 }
 
-void OutBytes::writeSymbol(unsigned int number, unsigned char numBytes)
+void OutBytes::writeNumber(unsigned int number, unsigned char numBytes)
 {
     vector<unsigned char> bits;
     while (number > 0) {

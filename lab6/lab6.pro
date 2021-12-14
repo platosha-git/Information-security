@@ -6,6 +6,7 @@ CONFIG -= qt
 SOURCES += \
         huffman.cpp \
         inbytes.cpp \
+        iofrequency.cpp \
         main.cpp \
         outbytes.cpp \
         treenode.cpp

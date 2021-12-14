@@ -87,19 +87,3 @@ vector<int> getFrequency(const string &filename)
     file.close();
     return frequency;
 }
-
-vector<int> InBytes::readFrequency()
-{
-    int numSymbols = readByte() + 1;
-    unsigned char numBytes = readByte();
-
-    vector<int> frequency(256, 0);
-
-    for (int i = 0; i < numSymbols; i++) {
-        int byte = readByte();
-        int freq = readSymbol(numBytes);
-        frequency[byte] = freq;
-    }
-
-    return frequency;
-}
