@@ -36,11 +36,13 @@ void OutBytes::writeBit(unsigned char bit)
     }
 }
 
-void OutBytes::writeByte(unsigned char byte) {
+void OutBytes::writeByte(unsigned char byte)
+{
     if (bits.empty()) {
         file.put(byte);
-    } else {
-        for (auto i = 0; i < 8; i++) {
+    }
+    else {
+        for (int i = 0; i < 8; i++) {
             bool bit = static_cast<bool>(byte & 1);
             bits.push_back(bit);
             byte >>= 1;

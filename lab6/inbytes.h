@@ -12,6 +12,7 @@ public:
     bool readBit();
     unsigned char readByte();
     size_t readSymbol(unsigned char numByte);
+    std::vector<int> readFrequency();
 
     bool isEof();
     void close();
@@ -19,9 +20,9 @@ public:
 private:
     std::ifstream file;
     std::vector<unsigned char> bits;
-    int extra_bits;
+    int addBits;
 };
 
-std::vector<int> getSymbolFrequency(const std::string &filename);
+std::vector<int> getFrequency(const std::string &filename);
 
 #endif // INBYTES_H

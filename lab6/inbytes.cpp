@@ -5,29 +5,30 @@ using namespace std;
 InBytes::InBytes(const string &filename)
 {
     file.open(filename, fstream::binary);
-    extra_bits = readByte();
+    addBits = readByte();
 }
 
-bool InBytes::readBit() {
+bool InBytes::readBit()
+{
     if (bits.empty()) {
-        auto byte = readByte();
-        // check the end of the file
+        unsigned char byte = readByte();
         file.get();
 
-        int end_bit_n = 0;
+        int endBits = 0;
         if (file.eof()) {
-            end_bit_n += extra_bits;
-        } else {
+            endBits += addBits;
+        }
+        else {
             file.unget();
         }
 
-        auto result_bit = static_cast<bool>((byte >> 7) & 1);
-        for (auto i = 6; i >= end_bit_n; i--) {
-            auto bit = static_cast<bool>((byte >> i) & 1);
+        bool resBit = static_cast<bool>((byte >> 7) & 1);
+        for (int i = 6; i >= endBits; i--) {
+            bool bit = static_cast<bool>((byte >> i) & 1);
             bits.push_back(bit);
         }
 
-        return result_bit;
+        return resBit;
     }
 
     bool bit = bits[0];
@@ -73,8 +74,7 @@ void InBytes::close()
     file.close();
 }
 
-// Считаем частоту для каждого символа в файле
-vector<int> getSymbolFrequency(const string &filename)
+vector<int> getFrequency(const string &filename)
 {
     ifstream file(filename, ios::binary);
     vector<int> frequency(256, 0);
@@ -88,3 +88,18 @@ vector<int> getSymbolFrequency(const string &filename)
     return frequency;
 }
 
+vector<int> InBytes::readFrequency()
+{
+    int numSymbols = readByte() + 1;
+    unsigned char numBytes = readByte();
+
+    vector<int> frequency(256, 0);
+
+    for (int i = 0; i < numSymbols; i++) {
+        int byte = readByte();
+        int freq = readSymbol(numBytes);
+        frequency[byte] = freq;
+    }
+
+    return frequency;
+}

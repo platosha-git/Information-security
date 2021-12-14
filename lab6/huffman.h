@@ -17,16 +17,15 @@ using HTable = std::unordered_map<unsigned char, std::string>;
 
 class Huffman {
 public:
-    Huffman() = default;
+    Huffman();
 
     void compress(std::string inFile, std::string outFile);
     void decompress(std::string inFile, std::string outFile);
 
 private:
     std::vector<int> frequency;
-    TreeNode *getHTree();
-    void build_h_table(const TreeNode *h_tree, HTable &table, std::string str);
-    TreeNode *read_h_tree(InBytes &file);
+    TreeNode *buildHTree();
+    void buildHTable(const TreeNode *root, HTable &table, std::string code);
 };
 
 #endif // HUFFMAN_H

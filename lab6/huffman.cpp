@@ -2,6 +2,11 @@
 
 using namespace std;
 
+Huffman::Huffman()
+{
+    frequency = vector<int>(256, 0);
+}
+
 unsigned char getNumBytes(unsigned int n)
 {
     double numBits = ceil(log2(static_cast<double>(n)));
@@ -11,11 +16,11 @@ unsigned char getNumBytes(unsigned int n)
 
 void Huffman::compress(string inFile, string outFile)
 {
-    frequency = getSymbolFrequency(inFile);
-    TreeNode *tree = getHTree();
+    frequency = getFrequency(inFile);
+    TreeNode *tree = buildHTree();
 
     HTable table;
-    build_h_table(tree, table, "");
+    buildHTable(tree, table, "");
 
     ifstream file(inFile, ios::binary);
     OutBytes output(outFile);
@@ -38,7 +43,7 @@ void Huffman::compress(string inFile, string outFile)
             break;
         }
 
-        auto code = table[symbol];
+        string code = table[symbol];
         for (auto &ch: code) {
             output.writeBit(ch == '1');
         }
@@ -47,7 +52,34 @@ void Huffman::compress(string inFile, string outFile)
     output.close();
 }
 
-TreeNode *Huffman::getHTree()
+void Huffman::decompress(string inFile, string outFile)
+{
+    InBytes file(inFile);
+    ofstream output(outFile, fstream::binary);
+
+    frequency = file.readFrequency();
+    TreeNode *tree = buildHTree();
+
+    HTable table;
+    buildHTable(tree, table, "");
+
+    string code = "";
+    while (!file.isEof()) {
+        bool bit = file.readBit();
+        code += bit ? '1' : '0';
+        for (auto &item: table) {
+            if (code == item.second) {
+                output.put(item.first);
+                code = "";
+            }
+        }
+    }
+
+    file.close();
+    output.close();
+}
+
+TreeNode *Huffman::buildHTree()
 {
     // Для получения канонического кода сравниваем сначала по частоте, потом по символу
     auto cmp = [](TreeNode *a, TreeNode *b) {
@@ -88,62 +120,17 @@ TreeNode *Huffman::getHTree()
 }
 
 // Построение таблицы Хаффмана на основе дерева
-void Huffman::build_h_table(const TreeNode *h_tree, HTable &table, std::string str) {
-    if (!h_tree) {
+void Huffman::buildHTable(const TreeNode *root, HTable &table, string code)
+{
+    if (!root) {
         return;
     }
 
-    if (!h_tree->getLeft() && !h_tree->getRight()) {
-        table[h_tree->getSymb()] = str;
+    if (!root->getLeft() && !root->getRight()) {
+        table[root->getSymb()] = code;
         return;
     }
 
-    build_h_table(h_tree->getLeft(), table, str + "0");
-    build_h_table(h_tree->getRight(), table, str + "1");
-}
-
-void Huffman::decompress(std::string inp_file, std::string otp_file) {
-    InBytes file(inp_file);
-    auto tree = read_h_tree(file);
-    HTable table;
-    build_h_table(tree, table, "");
-
-    std::ofstream output(otp_file, std::fstream::binary);
-    try {
-        std::string code;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-        while (true) {
-            auto bit = file.readBit();
-            code += bit ? "1" : "0";
-            for (auto &item: table) {
-                if (code == item.second) {
-                    output.put(item.first);
-                    code = "";
-                    continue;
-                }
-            }
-        }
-#pragma clang diagnostic pop
-    } catch (std::exception &) {}
-
-
-    file.close();
-    output.close();
-}
-
-TreeNode *Huffman::read_h_tree(InBytes &file) {
-    int symbols_n = file.readByte() + 1;
-    auto bytes_per_freq = file.readByte();
-    std::vector<int> priorities(256, 0);
-
-    for (auto i = 0; i < symbols_n; i++) {
-        auto byte = file.readByte();
-        auto freq = file.readSymbol(bytes_per_freq);
-        priorities[byte] = freq;
-    }
-
-    auto tree = getHTree();
-
-    return tree;
+    buildHTable(root->getLeft(), table, code + '0');
+    buildHTable(root->getRight(), table, code + '1');
 }
