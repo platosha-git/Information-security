@@ -4,8 +4,8 @@
 using namespace std;
 
 const string document = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/document";
-const string compressed = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/pressed";
-const string decompressed = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/unpressed";
+const string compressed = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/compressed";
+const string decompressed = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/decompressed";
 
 void menu()
 {

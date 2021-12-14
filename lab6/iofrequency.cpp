@@ -2,7 +2,7 @@
 
 using namespace std;
 
-const string freqFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/frequency";
+const string freqFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/metdata";
 
 unsigned char getNumBytes(unsigned int n)
 {
