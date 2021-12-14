@@ -23,7 +23,8 @@ public:
     void decompress(std::string inFile, std::string outFile);
 
 private:
-    TreeNode *get_h_tree(const std::vector<int> &priorities);
+    std::vector<int> frequency;
+    TreeNode *getHTree();
     void build_h_table(const TreeNode *h_tree, HTable &table, std::string str);
     TreeNode *read_h_tree(InBytes &file);
 };

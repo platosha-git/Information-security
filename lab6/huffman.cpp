@@ -11,8 +11,8 @@ unsigned char getNumBytes(unsigned int n)
 
 void Huffman::compress(string inFile, string outFile)
 {
-    vector<int> frequency = getSymbolFrequency(inFile);
-    TreeNode *tree = get_h_tree(frequency);
+    frequency = getSymbolFrequency(inFile);
+    TreeNode *tree = getHTree();
 
     HTable table;
     build_h_table(tree, table, "");
@@ -47,39 +47,41 @@ void Huffman::compress(string inFile, string outFile)
     output.close();
 }
 
-// Построение дерева Хаффмана
-TreeNode *Huffman::get_h_tree(const std::vector<int> &priorities) {
+TreeNode *Huffman::getHTree()
+{
     // Для получения канонического кода сравниваем сначала по частоте, потом по символу
     auto cmp = [](TreeNode *a, TreeNode *b) {
         if (a->getFrequency() < b->getFrequency()) {
             return true;
-        } else if (a->getFrequency() == b->getFrequency()) {
-            return a->getByte() > b->getByte();
+        }
+        else if (a->getFrequency() == b->getFrequency()) {
+            return a->getSymb() > b->getSymb();
         }
         return false;
     };
 
     set<TreeNode *, decltype(cmp)> queue(cmp);
-    for (size_t i = 0; i < priorities.size(); i++) {
-        if (priorities[i] == 0) {
+    for (size_t i = 0; i < frequency.size(); i++) {
+        if (frequency[i] == 0) {
             continue;
         }
 
-        auto node = new TreeNode(static_cast<unsigned char>(i), priorities[i]);
+        TreeNode *node = new TreeNode(static_cast<unsigned char>(i), frequency[i]);
         queue.insert(node);
     }
 
     while (queue.size() > 1) {
-        auto node1 = *queue.begin();
-        queue.erase(queue.begin());
-        auto node2 = *queue.begin();
+        TreeNode *node1 = *queue.begin();
         queue.erase(queue.begin());
 
-        auto new_node = new TreeNode(0, node1->getFrequency() + node2->getFrequency());
-        new_node->addChild(node2);
-        new_node->addChild(node1);
+        TreeNode *node2 = *queue.begin();
+        queue.erase(queue.begin());
 
-        queue.insert(new_node);
+        TreeNode *newNode = new TreeNode(0, node1->getFrequency() + node2->getFrequency());
+        newNode->addChild(node2);
+        newNode->addChild(node1);
+
+        queue.insert(newNode);
     }
 
     return *queue.begin();
@@ -92,7 +94,7 @@ void Huffman::build_h_table(const TreeNode *h_tree, HTable &table, std::string s
     }
 
     if (!h_tree->getLeft() && !h_tree->getRight()) {
-        table[h_tree->getByte()] = str;
+        table[h_tree->getSymb()] = str;
         return;
     }
 
@@ -141,7 +143,7 @@ TreeNode *Huffman::read_h_tree(InBytes &file) {
         priorities[byte] = freq;
     }
 
-    auto tree = get_h_tree(priorities);
+    auto tree = getHTree();
 
     return tree;
 }

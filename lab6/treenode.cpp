@@ -1,9 +1,11 @@
 #include <stdexcept>
 #include "treenode.h"
 
-TreeNode::TreeNode(unsigned char _byte, int _frequency) :
+using namespace std;
+
+TreeNode::TreeNode(unsigned char _symb, int _frequency) :
     left(nullptr), right(nullptr),
-    byte(_byte),
+    symb(_symb),
     frequency(_frequency)
 {
 
@@ -24,13 +26,13 @@ void TreeNode::addChild(TreeNode *child)
         right = child;
     }
     else {
-        throw std::logic_error("already 2 children");
+        throw logic_error("already 2 children");
     }
 }
 
-unsigned char TreeNode::getByte() const
+unsigned char TreeNode::getSymb() const
 {
-    return byte;
+    return symb;
 }
 
 TreeNode *TreeNode::getLeft() const

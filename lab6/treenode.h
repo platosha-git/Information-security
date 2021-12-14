@@ -3,20 +3,20 @@
 
 class TreeNode {
 public:
-    explicit TreeNode(unsigned char _byte, int _frequency);
+    explicit TreeNode(unsigned char _symb, int _frequency);
 
     void addChild(TreeNode *child);
     TreeNode *getLeft() const;
     TreeNode *getRight() const;
 
-    unsigned char getByte() const;
+    unsigned char getSymb() const;
     int getFrequency() const;
 
     ~TreeNode();
 
 private:
     TreeNode *left, *right;
-    unsigned char byte;
+    unsigned char symb;
     int frequency;
 };
 
