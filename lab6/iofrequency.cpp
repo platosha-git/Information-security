@@ -2,8 +2,6 @@
 
 using namespace std;
 
-const string freqFile = "/home/platosha/Desktop/BMSTU/7sem/Information-security/lab6/metdata";
-
 unsigned char getNumBytes(unsigned int n)
 {
     double numBits = ceil(log2(static_cast<double>(n)));
@@ -11,10 +9,8 @@ unsigned char getNumBytes(unsigned int n)
     return static_cast<unsigned char>(numBytes);
 }
 
-void writeFrequncy(const HTable table, const vector<int> frequency)
+void writeFrequncy(OutBytes &output, const HTable table, const vector<int> frequency)
 {
-    OutBytes output(freqFile);
-
     size_t tableSize = table.size() - 1;
     output.writeByte(static_cast<unsigned char>(tableSize));
 
@@ -26,21 +22,17 @@ void writeFrequncy(const HTable table, const vector<int> frequency)
         output.writeByte(elem.first);
         output.writeNumber(frequency[elem.first], numBytes);
     }
-
-    output.close();
 }
 
-vector<int> readFrequency()
+vector<int> readFrequency(InBytes &file)
 {
-    InBytes input(freqFile);
-
-    int numSymbols = input.readByte() + 1;
-    unsigned char numBytes = input.readByte();
+    int numSymbols = file.readByte() + 1;
+    unsigned char numBytes = file.readByte();
 
     vector<int> frequency(256, 0);
     for (int i = 0; i < numSymbols; i++) {
-        unsigned char byte = input.readByte();
-        int freq = input.readSymbol(numBytes);
+        unsigned char byte = file.readByte();
+        int freq = file.readSymbol(numBytes);
         frequency[byte] = freq;
     }
 

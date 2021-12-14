@@ -16,11 +16,10 @@ void Huffman::compress(string inFile, string outFile)
     HTable table;
     buildHTable(tree, table, "");
 
-    writeFrequncy(table, frequency);
-
     ifstream file(inFile, ios::binary);
     OutBytes output(outFile);
 
+    writeFrequncy(output, table, frequency);
     while (true) {
         unsigned char symbol = file.get();
         if (file.eof()) {
@@ -34,18 +33,20 @@ void Huffman::compress(string inFile, string outFile)
     }
 
     output.close();
+    file.close();
 }
 
 void Huffman::decompress(string inFile, string outFile)
 {
-    frequency = readFrequency();
+    InBytes file(inFile);
+    ofstream output(outFile, fstream::binary);
+
+    frequency = readFrequency(file);
     TreeNode *tree = buildHTree();
 
     HTable table;
     buildHTable(tree, table, "");
 
-    InBytes file(inFile);
-    ofstream output(outFile, fstream::binary);
     string code = "";
     while (!file.isEof()) {
         bool bit = file.readBit();
